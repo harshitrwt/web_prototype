@@ -1,0 +1,31 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.secondary-page-container {
+  @apply flex flex-col items-center justify-center min-h-screen bg-gray-50;
+}
+
+.title {
+  @apply text-3xl font-semibold text-gray-800 mb-8;
+}
+
+
+.options-list {
+  @apply w-full max-w-lg p-0;
+}
+
+
+.option-item {
+  @apply bg-green-600 text-white py-4 mb-4 text-center rounded-lg cursor-pointer transform transition duration-300 ease-in-out;
+}
+
+
+.option-item:hover {
+  @apply bg-green-500 scale-105;
+}
+
+.option-item:active {
+  @apply scale-100 shadow-lg;
+}
