@@ -30,7 +30,12 @@ function MainPage() {
       {/* Top Navbar */}
       <div style={styles.navbar}>
         <div style={styles.navLeft}>
-          <div style={styles.hindiTitle}>विवेकानन्द अध्ययन संस्थान/ Material Management Group Bulletin Board</div>
+          <div style={styles.logoTitleWrapper}>
+            <img src="/imglogo.png" alt="Logo" style={styles.logo} />
+            <div style={styles.hindiTitle}>
+              विवेकानन्द अध्ययन संस्थान अध्ययन संस्थान/<br></br>Material Management Group Bulletin Board
+            </div>
+          </div>
         </div>
 
         <div style={styles.navRight}>
@@ -52,16 +57,34 @@ function MainPage() {
 
       {/* Forum Sections */}
       <div style={styles.gridContainer}>
-        {forums.map((forum, index) => (
-          <div key={index} style={styles.card}>
-            <MdOutlineMenu style={styles.icon} />
-            <div style={styles.titleBlock}>
-              <div style={styles.title}>{forum.title}</div>
-              <div style={styles.topics}>Topics: {forum.topics}</div>
-            </div>
-          </div>
-        ))}
+  {forums.map((forum, index) => (
+    <div key={index} style={styles.card}>
+      <div style={styles.iconWrapper}>
+        <div style={styles.iconCircle}>
+          <MdOutlineMenu style={styles.iconStyled} />
+        </div>
       </div>
+
+      <div style={styles.titleBlock}>
+        <div
+          style={styles.title}
+          onClick={() =>
+            index % 2 === 0
+              ? navigate('/dashboard')
+              : navigate('/review')
+          }
+          onMouseOver={(e) => (e.target.style.color = '#a6d1ff')}
+          onMouseOut={(e) => (e.target.style.color = '#fff')}
+        >
+          {forum.title}
+        </div>
+        <div style={styles.topics}>Topics: {forum.topics}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+
 
       <div style={styles.indexLink}>↩ Board Index</div>
     </div>
@@ -77,7 +100,6 @@ const styles = {
     padding: '0',
     maxWidth: '1200px',
     margin: '0 auto',
-    
   },
   btnlogin: {
     backgroundColor: '#01447C',
@@ -103,11 +125,34 @@ const styles = {
   },
   navLeft: {
     flex: 1,
+    display: 'flex',
+    alignItems: 'center',
   },
-  hindiTitle: {
-    fontSize: '20px',
-    
-  },
+  logoTitleWrapper: {
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: '12px',
+  flexWrap: 'nowrap', // prevent logo and text from wrapping
+  overflow: 'hidden',
+},
+
+logo: {
+  width: '75px',
+  height: '75px',
+  borderRadius: '50%',
+  
+},
+
+hindiTitle: {
+  fontSize: '21px',
+  fontWeight: 'bold',
+  color: '#fff',
+  lineHeight: '1.2',
+  whiteSpace: 'normal',
+  overflowWrap: 'break-word',
+},
+
   navRight: {
     flex: 1,
     display: 'flex',
@@ -143,7 +188,6 @@ const styles = {
     cursor: 'pointer',
     marginBottom: '7vh',
     backgroundColor: '#F1F1F1',
-    
   },
   time: {
     fontSize: '14px',
@@ -160,8 +204,7 @@ const styles = {
     color: '#fff',
     justifyContent: 'center',
     display: 'flex',
-    background: 'linear-gradient(to right, #0d1a4a, #3c76b9)'
-    
+    background: 'linear-gradient(to right, #0d1a4a, #3c76b9)',
   },
   gridContainer: {
     border: '1px solid #000',
@@ -170,37 +213,76 @@ const styles = {
     gap: '20px',
     padding: '20px 20px 40px',
     backgroundColor: '#F1F1F1',
-    
   },
   card: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    border: '2px solid #000',
-    padding: '20px',
-    borderRadius: '8px',
-    height: '120px',
-    justifyContent: 'center',
-    color: '#fff',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    backgroundColor: '#01447C',
-  },
-  icon: {
-    fontSize: '24px',
-    marginBottom: '10px',
-  },
-  titleBlock: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: '15px',
-  },
-  topics: {
-    fontSize: '13px',
-    marginTop: '2px',
-  },
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  border: '2px solid #000',
+  padding: '20px',
+  borderRadius: '8px',
+  height: '120px',
+  color: '#fff',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  backgroundColor: '#01447C',
+  justifyContent: 'center',
+},
+
+icon: {
+  position: 'absolute',
+  top: '10px',
+  right: '10px',
+  fontSize: '20px',
+  backgroundColor: '#fff',
+  color: '#01447C',
+  borderRadius: '50%',
+  padding: '6px',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+},
+
+titleBlock: {
+  display: 'flex',
+  flexDirection: 'column',
+},
+
+title: {
+  fontWeight: 'bold',
+  fontSize: '15px',
+  cursor: 'pointer',
+  textDecoration: 'underline',
+  transition: 'color 0.3s',
+  color: '#fff',
+},
+
+topics: {
+  fontSize: '13px',
+  marginTop: '4px',
+},
+iconWrapper: {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  width: '100%',
+},
+
+iconCircle: {
+  width: '30px',
+  height: '30px',
+  borderRadius: '50%',
+  backgroundColor: '#ffffff',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginBottom: '10px',
+},
+
+iconStyled: {
+  fontSize: '20px',
+  color: '#01447C',
+  cursor: 'pointer',
+},
+
+
 };
 
 export default MainPage;
