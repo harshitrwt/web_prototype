@@ -1,25 +1,25 @@
 import { useNavigate } from 'react-router-dom';
-import { MdSearch } from 'react-icons/md';
+import { MdSearch, MdOutlineMenu } from 'react-icons/md';
 
 function SecondaryPage() {
   const navigate = useNavigate();
 
   const options = [
-    "Meeting Notes",
-    "Project Management",
-    "Report Generation",
-    "Client Communication",
-    "Team Collaboration",
-    "Code Review",
-    "Bug Tracking",
-    "Resource Allocation",
-    "Scheduling Tasks",
-    "Performance Metrics"
+  "बैठक नोट्स / Meeting Notes",
+  "परियोजना प्रबंधन / Project Management",
+  "रिपोर्ट निर्माण / Report Generation",
+  "ग्राहक संचार / Client Communication",
+  "टीम सहयोग / Team Collaboration",
+  "कोड समीक्षा / Code Review",
+  "बग ट्रैकिंग / Bug Tracking",
+  "संसाधन आवंटन / Resource Allocation",
+  "कार्य अनुसूची / Scheduling Tasks",
+  "प्रदर्शन मीट्रिक / Performance Metrics"
   ];
+
 
   return (
     <div style={styles.page}>
-      {/* Top Navbar */}
       <div style={styles.navbar}>
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
@@ -38,25 +38,29 @@ function SecondaryPage() {
 
       <div style={styles.navSeparator} />
 
-      {/* Page Title */}
-      <h2 style={styles.pageTitle}>Professional Options</h2>
+      <div style={styles.forumHeader}>Professional Options</div>
 
-      {/* Options List */}
-      <ul style={styles.optionsList}>
+      <div style={styles.gridContainer}>
         {options.map((option, index) => (
-          <li
+          <div
             key={index}
-            style={styles.optionItem}
+            style={styles.card}
             onClick={() => navigate('/review')}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#2f855a'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#38a169'}
-            onMouseDown={(e) => e.target.style.transform = 'scale(1)'}
-            onMouseUp={(e) => e.target.style.transform = 'scale(1.05)'}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
           >
-            {option}
-          </li>
+            <div style={styles.iconWrapper}>
+              <div style={styles.iconCircle}>
+                <MdOutlineMenu style={styles.iconStyled} />
+              </div>
+            </div>
+            <div style={styles.titleBlock}>
+              <div style={styles.title}>{option}</div>
+              <div style={styles.topics}>Click to review</div>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
@@ -134,32 +138,75 @@ const styles = {
     marginBottom: '10px',
     border: '1px solid #000',
   },
-  pageTitle: {
-    fontSize: '24px',
+  forumHeader: {
+    border: '1px solid #000',
+    padding: '5px 20px',
     fontWeight: 'bold',
-    color: '#2d3748',
-    margin: '30px 20px',
-    textAlign: 'center',
-    borderBottom: '2px solid #e2e8f0',
-    paddingBottom: '10px',
+    fontSize: '20px',
+    border: '2px solid #000',
+    marginBottom: '20px',
+    marginTop: '40px',
+    color: '#fff',
+    justifyContent: 'center',
+    display: 'flex',
+    background: 'linear-gradient(to right, #0d1a4a, #3c76b9)',
   },
-  optionsList: {
-    listStyleType: 'none',
-    padding: '0 20px',
-    margin: '0 auto',
-    maxWidth: '800px',
+  gridContainer: {
+    border: '1px solid #000',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '20px',
+    padding: '20px 20px 40px',
+    backgroundColor: '#F1F1F1',
   },
-  optionItem: {
-    backgroundColor: '#38a169',
-    color: '#ffffff',
-    padding: '1rem',
-    marginBottom: '1rem',
-    textAlign: 'center',
-    borderRadius: '0.5rem',
+  card: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    border: '2px solid #000',
+    padding: '20px',
+    borderRadius: '8px',
+    height: '120px',
+    color: '#fff',
+    backgroundColor: '#01447C',
     cursor: 'pointer',
-    transition: 'all 0.3s ease-in-out',
-    fontSize: '16px',
-    fontWeight: '500',
+    
+  },
+  iconWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: '100%',
+  },
+  iconCircle: {
+    width: '30px',
+    height: '30px',
+    borderRadius: '50%',
+    backgroundColor: '#ffffff',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '10px',
+  },
+  iconStyled: {
+    fontSize: '20px',
+    color: '#01447C',
+    cursor: 'pointer',
+  },
+  titleBlock: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: '15px',
+    textDecoration: 'underline',
+    color: '#fff',
+  },
+  topics: {
+    fontSize: '13px',
+    marginTop: '4px',
+    color: '#e6ffe6',
   },
 };
 
