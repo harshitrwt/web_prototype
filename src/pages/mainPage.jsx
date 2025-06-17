@@ -86,7 +86,7 @@ function MainPage() {
 
 
 
-      <div style={styles.indexLink}>↩ Board Index</div>
+      <div style={styles.belowboardLink}> Board Index</div>
     </div>
   );
 }
@@ -133,10 +133,22 @@ const styles = {
   flexDirection: 'row',
   alignItems: 'center',
   gap: '12px',
-  flexWrap: 'nowrap', // prevent logo and text from wrapping
+  flexWrap: 'nowrap', 
   overflow: 'hidden',
 },
 
+  belowboardLink: {
+  backgroundColor: '#f0f0f0',
+  color: '#333', 
+  padding: '10px 20px',
+  height: '100px',
+  display: 'flex',
+  fontWeight: '500',
+  fontSize: '16px',
+  border: '1px solid black',
+  marginTop: '20px',
+
+},
 logo: {
   width: '75px',
   height: '75px',
