@@ -3,18 +3,22 @@ import { MdSearch, MdOutlineMenu } from 'react-icons/md';
 
 function SecondaryPage() {
   const navigate = useNavigate();
+  const lastModifiedBy = "saketmital";
+  const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
 
   const options = [
-    "बैठक नोट्स / Meeting Notes",
-    "परियोजना प्रबंधन / Project Management",
-    "रिपोर्ट निर्माण / Report Generation",
-    "ग्राहक संचार / Client Communication",
-    "टीम सहयोग / Team Collaboration",
-    "कोड समीक्षा / Code Review",
-    "बग ट्रैकिंग / Bug Tracking",
-    "संसाधन आवंटन / Resource Allocation",
-    "कार्य अनुसूची / Scheduling Tasks",
-    "प्रदर्शन मीट्रिक / Performance Metrics"
+    "CGHS Latest Guidelines",
+    "CGHS Rate List updated",
+    "CGHS own Diagnostic Laboratories",
+    "CGHS Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
+    "CGHS COVID-19 Orders",
+    "MedicL Claim Forms",
+    "CGHS Ayush - Ayurvedic Treatment",
+    "CGHS - Miscellaneous Orders",
+    "CGHS Simplification of Procedure for Treatment at Empanelled Private Hospitals",
+    "CGHS Forms",
+    "CGHS Rate List",
+    "CGHS Revised Subscription",
   ];
 
   return (
@@ -40,7 +44,7 @@ function SecondaryPage() {
       <div style={styles.content}>
         <div style={styles.subcontent}>
           <p style={styles.paragraph}>
-            विषय खोजें / search one
+            विषय खोजें / CGHS
           </p>
           <div style={styles.actionRow}>
             <button style={styles.newTopicButton}>New Topic / नया विषय</button>
@@ -73,7 +77,15 @@ function SecondaryPage() {
             </div>
             <div style={styles.titleBlock}>
               <div style={styles.title}>{option}</div>
-              <div style={styles.topics}>Click to review</div>
+              <div style={styles.topics}>
+  Last post by <strong>{lastModifiedBy}</strong> on{" "}
+  <em>{lastModifiedDate.toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  })}</em>
+</div>
+
             </div>
           </div>
         ))}
@@ -206,7 +218,7 @@ const styles = {
     padding: '10px 20px',
     height: '100px',
     display: 'flex',
-    font: 'bold',   
+    font: 'bold',
     fontSize: '16px',
     border: '1px solid black',
     marginTop: '20px',
@@ -318,7 +330,7 @@ const styles = {
   },
   iconWrapper: {
     display: 'flex',
-   
+
     width: '100%',
   },
   iconCircle: {
