@@ -33,7 +33,7 @@ function SecondaryPage() {
 
       <div style={styles.headerRow}>
         <span style={styles.indexLink}>↩ Board Index</span>
-        
+
         <MdSearch style={styles.searchIcon} />
       </div>
 
@@ -99,21 +99,21 @@ function SecondaryPage() {
       </div>
 
 
-      <div>
-        <span></span>
-        <span></span>
-        <span></span>
+      <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
+        <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
+        <span>Users browsing this forum: No registered users and 1 guest</span>
       </div>
 
-      <div>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+      <div style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <span style={{ fontWeight: 'bold' }}>FORUM PERMISSIONS</span>
+        <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
+        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> post new topics in the forum</span>
+        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> reply to topics in the forum</span>
+        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> edit your posts in the forum</span>
+        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> delete your posts in the forum</span>
       </div>
+
 
       <div style={styles.belowboardLink}> Board Index</div>
 
@@ -176,7 +176,7 @@ const styles = {
     alignItems: 'center',
     marginTop: '10px',
   },
-  jumpto:{
+  jumpto: {
     display: 'inline-block',
     width: 0,
     height: 0,
@@ -201,17 +201,17 @@ const styles = {
     fontWeight: 'bold',
   },
   belowboardLink: {
-  backgroundColor: '#f0f0f0',
-  color: '#333', 
-  padding: '10px 20px',
-  height: '100px',
-  display: 'flex',
-  fontWeight: '500',
-  fontSize: '16px',
-  border: '1px solid black',
-  marginTop: '20px',
+    backgroundColor: '#f0f0f0',
+    color: 'black',
+    padding: '10px 20px',
+    height: '100px',
+    display: 'flex',
+    font: 'bold',   
+    fontSize: '16px',
+    border: '1px solid black',
+    marginTop: '20px',
 
-},
+  },
   paragraph: {
     fontSize: '26px',
     fontWeight: 'bold',
@@ -289,7 +289,7 @@ const styles = {
   indexLink: {
     fontSize: '20px',
     cursor: 'pointer',
-    
+
   },
   time: {
     fontSize: '14px',
@@ -318,7 +318,7 @@ const styles = {
   },
   iconWrapper: {
     display: 'flex',
-    justifyContent: 'flex-end',
+   
     width: '100%',
   },
   iconCircle: {

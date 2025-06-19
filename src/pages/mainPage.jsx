@@ -27,7 +27,7 @@ function MainPage() {
 
   return (
     <div style={styles.page}>
-      {/* Top Navbar */}
+      
       <div style={styles.navbar}>
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
@@ -46,7 +46,7 @@ function MainPage() {
 
       <div style={styles.navSeparator} />
 
-      {/* Header */}
+      
       <div style={styles.headerRow}>
         <span style={styles.indexLink}>↩ Board Index</span>
         <span style={styles.time}>It is currently 11 Jun 2025, 11:55</span>
@@ -179,11 +179,6 @@ hindiTitle: {
   searchIcon: {
     fontSize: '18px',
     cursor: 'pointer',
-  },
-  navSeparator: {
-    borderBottom: '2px solid #000',
-    marginBottom: '10px',
-    border: '1px solid #000',
   },
   headerRow: {
     display: 'flex',
