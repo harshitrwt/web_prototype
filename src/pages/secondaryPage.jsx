@@ -1,10 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdOutlineMenu } from 'react-icons/md';
-
+import { useEffect, useState } from 'react';
 function SecondaryPage() {
   const navigate = useNavigate();
   const lastModifiedBy = "saketmital";
   const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
+  const [isMobile, setIsMobile] = useState(false);
+  
+    useEffect(() => {
+      const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
   const options = [
     "CGHS Latest Guidelines",
@@ -23,16 +31,50 @@ function SecondaryPage() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.navbar}>
-        <div style={styles.navLeft}>
-          <div style={styles.logoTitleWrapper}>
-            <img src="/imglogo.png" alt="Logo" style={styles.logo} />
-            <div style={styles.hindiTitle}>
-              विवेकानन्द अध्ययन संस्थान/<br />Material Management Group Bulletin Board
+      <div
+              style={{
+                ...styles.navbar,
+                height: isMobile ? '60px' : '80px',
+                padding: isMobile ? '8px 12px' : '12px 20px',
+                fontSize: isMobile ? '12px' : '16px'
+              }}
+            >
+              <div style={styles.navLeft}>
+                <div style={styles.logoTitleWrapper}>
+                  <img
+                    src="/imglogo.png"
+                    alt="Logo"
+                    style={{
+                      ...styles.logo,
+                      width: isMobile ? '50px' : '75px',
+                      height: isMobile ? '50px' : '75px'
+                    }}
+                  />
+                  <div style={styles.hindiTitle}>
+                    <div style={{ fontSize: isMobile ? '12px' : '21px' , width: isMobile ? '170px' : 'auto' }}>
+                     ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /
+                    </div>
+                    <div style={{ fontSize: isMobile ? '10px' : '21px' }}>
+                       Solid State Physics Laboratory Bulletin Board
+                    </div>
+                  </div>
+                </div>
+              </div>
+      
+              <div style={styles.navRight}>
+                <button
+                  style={{
+                    ...styles.btnlogin,
+                    fontSize: isMobile ? '12px' : '14px',
+                    padding: isMobile ? '4px 10px' : '8px 16px'
+                  }}
+                  onClick={() => navigate('/login')}
+                >
+                  Login
+                </button>
+                <MdSearch style={{ fontSize: isMobile ? '16px' : '18px', cursor: 'pointer' }} />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
 
 
       <div style={styles.headerRow}>
@@ -40,6 +82,7 @@ function SecondaryPage() {
 
         <MdSearch style={styles.searchIcon} />
       </div>
+      
 
       <div style={styles.content}>
         <div style={styles.subcontent}>
@@ -241,6 +284,7 @@ const styles = {
     margin: '10px',
   },
   hindiTitle: {
+    marginTop: "10px",
     fontSize: '21px',
     fontWeight: 'bold',
     color: '#fff',

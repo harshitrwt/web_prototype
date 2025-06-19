@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect} from "react";
 import { MdSearch } from "react-icons/md";
 
 const emojis = ["😀", "😂", "😍", "👍", "🙏", "🔥", "🎉", "💡", "✅", "❌"];
@@ -10,12 +10,19 @@ function AddReviewPage() {
   const [activeTab, setActiveTab] = useState("Options");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef(null);
-
+  const [isMobile, setIsMobile] = useState(false);
+    
+      useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+      }, []);
   const handleFileUpload = (e) => {
     setFile(e.target.files[0]);
   };
 
-  // Insert emoji at cursor position in textarea
+ 
   const addEmoji = (emoji) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -35,18 +42,41 @@ function AddReviewPage() {
 
   return (
     <div style={styles.wrapper}>
-      <div style={styles.navbar}>
-        <div style={styles.navLeft}>
-          <div style={styles.logoTitleWrapper}>
-            <img src="/imglogo.png" alt="Logo" style={styles.logo} />
-            <div style={styles.hindiTitle}>
-              विवेकानन्द अध्ययन संस्थान/
-              <br />
-              Material Management Group Bulletin Board
-            </div>
-          </div>
-        </div>
-      </div>
+      <div
+                    style={{
+                      ...styles.navbar,
+                      height: isMobile ? '60px' : '80px',
+                      padding: isMobile ? '8px 12px' : '12px 20px',
+                      fontSize: isMobile ? '12px' : '16px'
+                    }}
+                  >
+                    <div style={styles.navLeft}>
+                      <div style={styles.logoTitleWrapper}>
+                        <img
+                          src="/imglogo.png"
+                          alt="Logo"
+                          style={{
+                            ...styles.logo,
+                            width: isMobile ? '50px' : '75px',
+                            height: isMobile ? '50px' : '75px'
+                          }}
+                        />
+                        <div style={styles.hindiTitle}>
+                          <div style={{ fontSize: isMobile ? '12px' : '21px' , width: isMobile ? '170px' : 'auto' }}>
+                             ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /
+                          </div>
+                          <div style={{ fontSize: isMobile ? '10px' : '21px' }}>
+                            Solid State Physics Laboratory Bulletin Board
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+            
+                    <div style={styles.navRight}>
+                      
+                      <MdSearch style={{ fontSize: isMobile ? '16px' : '18px', cursor: 'pointer' }} />
+                    </div>
+                  </div>
       <div style={styles.headerRow}>
         <span style={styles.indexLink}>↩ Board Index</span>
 
@@ -259,6 +289,7 @@ const styles = {
     lineHeight: "1.2",
     whiteSpace: "normal",
     overflowWrap: "break-word",
+    marginTop: "10px",
   },
   headerRow: {
     display: "flex",
