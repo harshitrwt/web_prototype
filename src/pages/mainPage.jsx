@@ -91,7 +91,7 @@ function MainPage() {
   );
 }
 
-// Styles
+
 const styles = {
   page: {
     backgroundColor: '#fff',
