@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect} from "react";
 import { MdSearch } from "react-icons/md";
+import { useParams } from 'react-router-dom';
 
 const emojis = ["😀", "😂", "😍", "👍", "🙏", "🔥", "🎉", "💡", "✅", "❌"];
 
@@ -74,13 +75,13 @@ function AddReviewPage() {
             
                     <div style={styles.navRight}>
                       
-                      <MdSearch style={{ fontSize: isMobile ? '16px' : '18px', cursor: 'pointer' }} />
+
                     </div>
                   </div>
       <div style={styles.headerRow}>
         <span style={styles.indexLink}>↩ Board Index</span>
 
-        <MdSearch style={styles.searchIcon} />
+        
       </div>
       <h2 style={styles.heading}>
         सूचना प्रौद्योगिकी समूह / Information Technology Group
