@@ -7,7 +7,7 @@ import CanteenPage from '../pages/CanteenPage';
 import FinancePage from '../pages/FinancePage';
 import HrdPage from '../pages/HRDPage';
 import ItgPage from '../pages/ITGPage';
-import SportsPage from '../pages/Sportspage';
+import SportsPage from '../pages/SportsPage';
 
 const AppRoutes = () => {
   return (
