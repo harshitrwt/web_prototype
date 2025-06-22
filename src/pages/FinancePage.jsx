@@ -2,14 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
-function SecondaryPage() {
+function FinancePage() {
   const navigate = useNavigate();
   const lastModifiedBy = "saketmital";
   const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
   const [isMobile, setIsMobile] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -19,24 +16,13 @@ function SecondaryPage() {
   }, []);
 
   const options = [
-    "CGHS Latest Guidelines",
-    "CGHS Rate List updated",
-    "CGHS own Diagnostic Laboratories",
-    "CGHS Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
-    "CGHS COVID-19 Orders",
-    "MedicL Claim Forms",
-    "CGHS Ayush - Ayurvedic Treatment",
-    "CGHS - Miscellaneous Orders",
-    "CGHS Simplification of Procedure for Treatment at Empanelled Private Hospitals",
-    "CGHS Forms",
-    "CGHS Rate List",
-    "CGHS Revised Subscription",
+    "LTC",
+    "Office Bag Claim Form",
+    "TA/DA Forms",
+    "Finanaces",
+    "Finance COVID-19 Orders",
+    "Finance Claim Forms",
   ];
-
-  const filteredOptions = options.filter(option =>
-  option.toLowerCase().includes(searchTerm.toLowerCase())
-);
-
 
   return (
     <div style={styles.page}>
@@ -96,18 +82,21 @@ function SecondaryPage() {
       <div style={styles.content}>
         <div style={styles.subcontent}>
           <p style={styles.paragraph}>
-            सीजीएचएस / CGHS
+            वित्त / Finance
           </p>
           <div style={styles.actionRow}>
-            <button style={styles.newTopicButton}>New Topic / नया विषय</button>
-            <input
-  type="text"
-  placeholder="Search topics / विषय खोजें"
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  style={styles.searchInput}
-/>
+            <button
+  style={styles.newTopicButton}
+  onClick={() => navigate('/review')}
+>
+  New Topic / नया विषय
+</button>
 
+            <input
+              type="text"
+              placeholder="Search topics / विषय खोजें"
+              style={styles.searchInput}
+            />
           </div>
         </div>
       </div>
@@ -115,9 +104,9 @@ function SecondaryPage() {
 
 
       <div style={styles.forumHeader}>Professional Options</div>
-      
+
       <div style={styles.gridContainer}>
-        {filteredOptions.map((option, index) => (
+        {options.map((option, index) => (
           <div
             key={index}
             style={styles.card}
@@ -409,4 +398,4 @@ const styles = {
   },
 };
 
-export default SecondaryPage;
+export default FinancePage;
