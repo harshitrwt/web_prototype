@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import "./loginPage.css";
 import drdoBg from "./drdobg.webp";
- // Adjust path based on file location
-
 
 function LoginPage() {
   const [userId, setUserId] = useState('');
@@ -12,7 +10,7 @@ function LoginPage() {
   const [captchaInput, setCaptchaInput] = useState('');
   const [error, setError] = useState('');
 
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
 
   const generateCaptcha = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -22,6 +20,8 @@ function LoginPage() {
   useEffect(() => {
     setCaptcha(generateCaptcha());
   }, []);
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,39 +44,44 @@ function LoginPage() {
     }
 
     setError('');
-    navigate('/main'); // Redirect to main page
+    localStorage.setItem('isLoggedIn', 'true');
+    navigate('/main');
+    window.location.reload(); // ✅ trigger re-check in MainPage
+
   };
 
+
+
   return (
-    <div  style={styles.container}>
+    <div style={styles.container}>
       <div style={styles.background}></div>
 
       <div style={styles.overlay}>
-        <form id="container" onSubmit={handleSubmit} style={styles.form}>
-          <h2  style={{ textAlign: 'center' }}>LOGIN</h2>
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <h2 style={styles.heading}>LOGIN</h2>
 
-          <label>Username:</label>
+          <label style={styles.label}>Username</label>
           <input
             type="text"
-            placeholder='enter username'
+            placeholder="Enter username"
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
             style={styles.input}
           />
 
-          <label>Password:</label>
+          <label style={styles.label}>Password</label>
           <input
             type="password"
-            placeholder='enter password'
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             style={styles.input}
           />
 
+          <label style={styles.label}>Captcha</label>
           <div style={styles.captchaBox}>
             <span style={styles.captcha}>{captcha}</span>
             <button
-              id="refreshbtn"
               type="button"
               onClick={() => setCaptcha(generateCaptcha())}
               style={styles.refresh}
@@ -85,9 +90,9 @@ function LoginPage() {
             </button>
           </div>
 
-          <label>Enter Captcha:</label>
           <input
             type="text"
+            placeholder="Enter captcha"
             value={captchaInput}
             onChange={(e) => setCaptchaInput(e.target.value)}
             style={styles.input}
@@ -95,33 +100,32 @@ function LoginPage() {
 
           {error && <div style={styles.error}>{error}</div>}
 
-          <button id="loginbtn" type="submit" style={styles.button}>Login</button>
+          <button type="submit" style={styles.button}>
+            Login
+          </button>
         </form>
       </div>
     </div>
   );
 }
 
-
 const styles = {
   container: {
-  position: 'fixed', 
-  top: 0,
-  left: 0,
-  width: '100vw',
-  height: '100vh',
-  overflow: 'hidden',
-  display: 'flex',
-  backgroundColor: 'fff',
-  backgroundImage: `url(${drdoBg})`,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat'
-},
-  background: {
-    position: 'absolute',
+    position: 'fixed',
     top: 0,
     left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundImage: `url(${drdoBg})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  background: {
+    position: 'absolute',
     width: '100%',
     height: '100%',
     opacity: 0.2,
@@ -130,63 +134,81 @@ const styles = {
   overlay: {
     position: 'relative',
     zIndex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     width: '100%',
-    height: '100%',
+    maxWidth: '400px',
+    padding: '20px',
   },
   form: {
     background: '#fff',
     padding: '30px',
-    borderRadius: '5px',
-    width: '320px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  heading: {
+    textAlign: 'center',
+    marginBottom: '16px',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#01447C',
+  },
+  label: {
+    fontWeight: '500',
+    fontSize: '14px',
+    marginBottom: '-8px',
   },
   input: {
-    width: '100%',
+    width: '95%',
     padding: '10px',
-    margin: '8px 0 16px 0',
     borderRadius: '6px',
     border: '1px solid #ccc',
+    fontSize: '14px',
   },
   captchaBox: {
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: '16px',
+    alignItems: 'center',
+    marginBottom: '8px',
   },
   captcha: {
-    fontSize: '20px',
+    fontSize: '18px',
     fontWeight: 'bold',
-    letterSpacing: '2px',
-    padding: '5px 10px',
     backgroundColor: '#e0e7ff',
+    padding: '8px 12px',
     borderRadius: '6px',
+    letterSpacing: '2px',
   },
   refresh: {
-    padding: '6px 10px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    borderRadius: '6px',
-    border: 'none',
+    padding: '6px 12px',
+    backgroundColor: '#01447C',
     color: '#fff',
+    borderRadius: '6px',
+    fontSize: '12px',
+    cursor: 'pointer',
+    border: 'none',
+    marginLeft: '10px',
   },
   error: {
     color: 'red',
+    fontSize: '13px',
+    marginTop: '-4px',
     marginBottom: '10px',
+    textAlign: 'center',
   },
   button: {
-    width: '100%',
+    marginTop: '8px',
     padding: '10px',
-    backgroundColor: '#10b981',
+    width: '102%',
+    backgroundColor: '#01447C',
     color: '#fff',
     border: 'none',
     borderRadius: '6px',
     fontWeight: 'bold',
+    fontSize: '15px',
     cursor: 'pointer',
-    
   },
-  
 };
 
 export default LoginPage;

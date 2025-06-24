@@ -1,16 +1,18 @@
 #loginbtn {
    box-shadow:  1px 2px 4px black;
+   background-color: #01447C;
 }
 #loginbtn:hover {
-   box-shadow:  3px 5px 10px black;  
+   box-shadow:  3px 5px 10px black;
+   background-color: #01294a;   
 }
 
 #refreshbtn {
-    background-color: #3b82f6;
+    background-color: #01447C;
 }
 
 #refreshbtn:hover {
-   background-color: #10b981; 
+   background-color: #01294a; 
     
 }
 
@@ -18,6 +20,6 @@
     box-shadow:  2px 4px 8px  black;
 }
 #container:hover {
-    box-shadow:  16px 32px 64px  black; 
+    box-shadow:  5px 5px 5px  black; 
 
 }
