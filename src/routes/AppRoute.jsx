@@ -12,8 +12,13 @@ import SportsPage from '../pages/SportsPage';
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Login is the default route */}
       <Route path="/" element={<MainPage />} />
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Redirect target after login */}
+      <Route path="/main" element={<MainPage />} />
+      
       <Route path="/dashboard" element={<SecondaryPage />} />
       <Route path="/review" element={<AddReviewPage />} />
       <Route path="/canteenPage" element={<CanteenPage/>} />
@@ -21,6 +26,7 @@ const AppRoutes = () => {
       <Route path="/hrdPage" element={<HrdPage/>} />
       <Route path="/itgPage" element={<ItgPage/>} />
       <Route path="/SportsPage" element={<SportsPage />} />
+      
     </Routes>
   );
 };
