@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdOutlineMenu, MdArrowDropDown } from 'react-icons/md';
 import { useEffect, useRef, useState } from 'react';
+import "./loginPage.css";
 
 function MainPage() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ function MainPage() {
   setIsLoggedIn(false);
   setShowDropdown(false);
   navigate('/login');
-  window.location.reload(); // ✅ force refresh to reset state
+  window.location.reload(); 
 };
 
 
@@ -47,15 +48,15 @@ function MainPage() {
     { title: 'वित्त / Finance', topics: 10, route: '/financePage' },
     { title: 'मानव संसाधन / HRD', topics: 16, route: '/hrdPage' },
     { title: 'सूचना प्रौद्योगिकी समूह / IT Group', topics: 65, route: '/itgPage' },
-    { title: 'उपकरण / Instrumentation', topics: 2, route: '/instrumentation' },
-    { title: 'पुस्तकालय / Library', topics: 27, route: '/library' },
-    { title: 'सामग्री प्रबंधन समूह / Material Management Group', topics: 52, route: '/mmg' },
-    { title: 'मास्क सुविधा / Mask Facility', topics: 5, route: '/mask' },
-    { title: 'जनता / Public', topics: 38, route: '/public' },
-    { title: 'क्यूएमएस समूह / QMS Group', topics: 4, route: '/qms' },
-    { title: 'गोपनीय अनुभाग / Confidential', topics: 21, route: '/confidential' },
+    { title: 'उपकरण / Instrumentation', topics: 2, route: '/' },
+    { title: 'पुस्तकालय / Library', topics: 27, route: '/' },
+    { title: 'सामग्री प्रबंधन समूह / Material Management Group', topics: 52, route: '/' },
+    { title: 'मास्क सुविधा / Mask Facility', topics: 5, route: '/' },
+    { title: 'जनता / Public', topics: 38, route: '/' },
+    { title: 'क्यूएमएस समूह / QMS Group', topics: 4, route: '/' },
+    { title: 'गोपनीय अनुभाग / Confidential', topics: 21, route: '/' },
     { title: 'खेल / Sports', topics: 2, route: '/sportsPage' },
-    { title: 'कार्यशाला / Workshop', topics: 2, route: '/workshop' }
+    { title: 'कार्यशाला / Workshop', topics: 2, route: '/' }
   ];
 
   const filteredForums = forums.filter(forum => {
@@ -100,6 +101,7 @@ function MainPage() {
           {isLoggedIn ? (
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button
+                className='login-main-btn'
                 style={{
                   ...styles.btnlogin,
                   fontSize: isMobile ? '12px' : '14px',
@@ -120,6 +122,7 @@ function MainPage() {
             </div>
           ) : (
             <button
+              className='login-main-btn'
               style={{
                 ...styles.btnlogin,
                 fontSize: isMobile ? '12px' : '14px',
@@ -167,7 +170,7 @@ function MainPage() {
           fontSize: isMobile ? '14px' : '20px',
           margin: isMobile ? '10px 0 0 0' : '85px 0 0 0',
         }}>
-          Board Index
+          🏠︎ Board Index
         </span>
         <span style={{
           ...styles.time,
@@ -212,7 +215,7 @@ function MainPage() {
         ))}
       </div>
 
-      <div style={styles.belowboardLink}>Board Index</div>
+      <div style={styles.belowboardLink}>🏠︎ Board Index</div>
     </div>
   );
 }
@@ -229,7 +232,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     color: '#fff',
     fontFamily: 'monospace',
     fontWeight: 'bold',
@@ -267,7 +270,6 @@ const styles = {
     gap: '12px',
   },
   btnlogin: {
-    backgroundColor: '#01447C',
     color: '#fff',
     border: '1px solid #fff',
     borderRadius: '4px',
@@ -310,7 +312,7 @@ const styles = {
     backgroundColor: '#f1f1f1',
   },
   card: {
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     color: '#fff',
     border: '2px solid #000',
     padding: '20px',
@@ -365,7 +367,6 @@ const styles = {
     marginTop: '20px',
   },
   btnlogin: {
-    backgroundColor: '#01447C',
     color: '#fff',
     border: '1px solid #fff',
     borderRadius: '4px',

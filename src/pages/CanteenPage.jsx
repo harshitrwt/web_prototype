@@ -9,6 +9,8 @@ function CanteenPage() {
     const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
     const [isMobile, setIsMobile] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
     const [options, setOptions] = useState([
         "CSD Currennt Rate List",
         "CSD Smart Card Renewal Form",
@@ -40,7 +42,7 @@ function CanteenPage() {
 
     return (
         <div style={styles.page}>
-            
+
             <div style={{
                 ...styles.navbar,
                 height: isMobile ? '60px' : '80px',
@@ -102,7 +104,7 @@ function CanteenPage() {
             </div>
 
             <div style={styles.headerRow}>
-                <span style={styles.indexLink}>↩ Board Index</span>
+                <span style={styles.indexLink}>🏠︎ Board Index</span>
             </div>
 
             <div style={styles.content}>
@@ -122,7 +124,10 @@ function CanteenPage() {
                             type="text"
                             placeholder="Search topics / विषय खोजें"
                             style={styles.searchInput}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
+
                     </div>
                 </div>
             </div>
@@ -130,32 +135,35 @@ function CanteenPage() {
             <div style={styles.forumHeader}>Professional Options</div>
 
             <div style={styles.gridContainer}>
-                {options.map((option, index) => (
-                    <div
-                        key={index}
-                        style={styles.card}
-                        onClick={() => navigate('/review')}
-                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
-                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
-                    >
-                        <div style={styles.iconWrapper}>
-                            <div style={styles.iconCircle}>
-                                <MdOutlineMenu style={styles.iconStyled} />
+                {options
+                    .filter(option =>
+                        option.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map((option, index) => (
+                        <div
+                            key={index}
+                            style={styles.card}
+                            onClick={() => navigate('')}
+                        >
+                            <div style={styles.iconWrapper}>
+                                <div style={styles.iconCircle}>
+                                    <MdOutlineMenu style={styles.iconStyled} />
+                                </div>
+                            </div>
+                            <div style={styles.titleBlock}>
+                                <div style={styles.title}>{option}</div>
+                                <div style={styles.topics}>
+                                    Last post by <strong>{lastModifiedBy}</strong> on{" "}
+                                    <em>{lastModifiedDate.toLocaleDateString("en-IN", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                    })}</em>
+                                </div>
                             </div>
                         </div>
-                        <div style={styles.titleBlock}>
-                            <div style={styles.title}>{option}</div>
-                            <div style={styles.topics}>
-                                Last post by <strong>{lastModifiedBy}</strong> on{" "}
-                                <em>{lastModifiedDate.toLocaleDateString("en-IN", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric"
-                                })}</em>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                    ))}
+
             </div>
 
             {isLoggedIn && (
@@ -184,7 +192,7 @@ function CanteenPage() {
                 <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> delete your posts in the forum</span>
             </div>
 
-            <div style={styles.belowboardLink}>Board Index</div>
+            <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
         </div>
     );
 }
@@ -202,7 +210,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#01447C',
+        background: 'linear-gradient(to right, #0d1a4a, #01447D)',
         height: '80px',
         color: '#fff',
         padding: '12px 20px',
@@ -258,7 +266,7 @@ const styles = {
         borderRadius: '50%',
     },
     newTopicButton: {
-        backgroundColor: '#01447C',
+        background: 'linear-gradient(to right, #0d1a4a, #01447D)',
         color: '#fff',
         padding: '10px 20px',
         border: 'none',
@@ -381,7 +389,7 @@ const styles = {
         borderRadius: '8px',
         height: '120px',
         color: '#fff',
-        backgroundColor: '#01447C',
+        background: 'linear-gradient(to right, #0d1a4a, #01447D)',
         cursor: 'pointer',
     },
     iconWrapper: {

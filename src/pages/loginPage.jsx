@@ -82,6 +82,7 @@ function LoginPage() {
           <div style={styles.captchaBox}>
             <span style={styles.captcha}>{captcha}</span>
             <button
+            className='refreshbtn'
               type="button"
               onClick={() => setCaptcha(generateCaptcha())}
               style={styles.refresh}
@@ -100,7 +101,7 @@ function LoginPage() {
 
           {error && <div style={styles.error}>{error}</div>}
 
-          <button type="submit" style={styles.button}>
+          <button type="submit" className='loginbtn' style={styles.button}>
             Login
           </button>
         </form>
@@ -182,7 +183,6 @@ const styles = {
   },
   refresh: {
     padding: '6px 12px',
-    backgroundColor: '#01447C',
     color: '#fff',
     borderRadius: '6px',
     fontSize: '12px',
@@ -201,7 +201,6 @@ const styles = {
     marginTop: '8px',
     padding: '10px',
     width: '102%',
-    backgroundColor: '#01447C',
     color: '#fff',
     border: 'none',
     borderRadius: '6px',

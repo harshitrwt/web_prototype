@@ -8,8 +8,9 @@ function SecondaryPage() {
   const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
   const [isMobile, setIsMobile] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
+
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -17,6 +18,11 @@ function SecondaryPage() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+        const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+        setIsLoggedIn(loggedIn);
+    }, []);
 
   const options = [
     "CGHS Latest Guidelines",
@@ -34,8 +40,8 @@ function SecondaryPage() {
   ];
 
   const filteredOptions = options.filter(option =>
-  option.toLowerCase().includes(searchTerm.toLowerCase())
-);
+    option.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
 
   return (
@@ -73,23 +79,37 @@ function SecondaryPage() {
         </div>
 
         <div style={styles.navRight}>
-          <button
-            style={{
-              ...styles.btnlogin,
-              fontSize: isMobile ? '12px' : '14px',
-              padding: isMobile ? '4px 10px' : '8px 16px'
-            }}
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </button>
-          <MdSearch style={{ fontSize: isMobile ? '16px' : '18px', cursor: 'pointer' }} />
+          {isLoggedIn ? (
+            <button
+              style={{
+                ...styles.btnlogin,
+                fontSize: isMobile ? '12px' : '14px',
+                padding: isMobile ? '4px 10px' : '8px 16px',
+                cursor: 'pointer',
+              }}
+              disabled
+            >
+              Admin
+            </button>
+          ) : (
+            <button
+              style={{
+                ...styles.btnlogin,
+                fontSize: isMobile ? '12px' : '14px',
+                padding: isMobile ? '4px 10px' : '8px 16px',
+              }}
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </button>
+          )}
+
         </div>
       </div>
 
 
       <div style={styles.headerRow}>
-        <span style={styles.indexLink}>↩ Board Index</span>
+        <span style={styles.indexLink}>🏠︎ Board Index</span>
       </div>
 
 
@@ -99,14 +119,14 @@ function SecondaryPage() {
             सीजीएचएस / CGHS
           </p>
           <div style={styles.actionRow}>
-            <button style={styles.newTopicButton}>New Topic / नया विषय</button>
+            <button style={styles.newTopicButton} onClick={() => navigate('/review')}>New Topic / नया विषय</button>
             <input
-  type="text"
-  placeholder="Search topics / विषय खोजें"
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  style={styles.searchInput}
-/>
+              type="text"
+              placeholder="Search topics / विषय खोजें"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={styles.searchInput}
+            />
 
           </div>
         </div>
@@ -115,15 +135,14 @@ function SecondaryPage() {
 
 
       <div style={styles.forumHeader}>Professional Options</div>
-      
+
       <div style={styles.gridContainer}>
         {filteredOptions.map((option, index) => (
           <div
             key={index}
             style={styles.card}
-            onClick={() => navigate('/review')}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
+            onClick={() => navigate('')}
+        
           >
             <div style={styles.iconWrapper}>
               <div style={styles.iconCircle}>
@@ -146,10 +165,14 @@ function SecondaryPage() {
         ))}
       </div>
 
-      <div style={styles.belowContent}>
-        <button style={styles.newTopicButton}>New Topic / नया विषय</button>
-        <span style={styles.belowpara}>12 topics Page 1 of 1</span>
-      </div>
+      {isLoggedIn && (
+                <div style={styles.belowContent}>
+                    <button style={styles.newTopicButton} onClick={() => navigate('/review')}>
+                        New Topic / नया विषय
+                    </button>
+                    <span style={styles.belowpara}>12 topics Page 1 of 1</span>
+                </div>
+            )}
 
       <JumpToForum />
 
@@ -170,7 +193,7 @@ function SecondaryPage() {
       </div>
 
 
-      <div style={styles.belowboardLink}> Board Index</div>
+      <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
 
 
     </div>
@@ -190,7 +213,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     height: '80px',
     color: '#fff',
     padding: '12px 20px',
@@ -246,7 +269,7 @@ const styles = {
     borderRadius: '50%',
   },
   newTopicButton: {
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     color: '#fff',
     padding: '10px 20px',
     border: 'none',
@@ -369,7 +392,7 @@ const styles = {
     borderRadius: '8px',
     height: '120px',
     color: '#fff',
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     cursor: 'pointer',
   },
   iconWrapper: {

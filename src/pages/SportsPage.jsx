@@ -7,6 +7,9 @@ function SportsPage() {
   const lastModifiedBy = "saketmital";
   const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -15,12 +18,17 @@ function SportsPage() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+  }, []);
+
   const options = [
     "Sports Currennt Rate List",
     "Sports Smart Card Renewal Form",
     "Sports own Diagnostic Laboratories",
     "Sports Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
-    
+
   ];
 
   return (
@@ -58,23 +66,37 @@ function SportsPage() {
         </div>
 
         <div style={styles.navRight}>
-          <button
-            style={{
-              ...styles.btnlogin,
-              fontSize: isMobile ? '12px' : '14px',
-              padding: isMobile ? '4px 10px' : '8px 16px'
-            }}
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </button>
-          <MdSearch style={{ fontSize: isMobile ? '16px' : '18px', cursor: 'pointer' }} />
+          {isLoggedIn ? (
+            <button
+              style={{
+                ...styles.btnlogin,
+                fontSize: isMobile ? '12px' : '14px',
+                padding: isMobile ? '4px 10px' : '8px 16px',
+                cursor: 'pointer',
+              }}
+              disabled
+            >
+              Admin
+            </button>
+          ) : (
+            <button
+              style={{
+                ...styles.btnlogin,
+                fontSize: isMobile ? '12px' : '14px',
+                padding: isMobile ? '4px 10px' : '8px 16px',
+              }}
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </button>
+          )}
+
         </div>
       </div>
 
 
       <div style={styles.headerRow}>
-        <span style={styles.indexLink}>↩ Board Index</span>
+        <span style={styles.indexLink}>🏠︎ Board Index</span>
       </div>
 
 
@@ -85,17 +107,20 @@ function SportsPage() {
           </p>
           <div style={styles.actionRow}>
             <button
-  style={styles.newTopicButton}
-  onClick={() => navigate('/review')}
->
-  New Topic / नया विषय
-</button>
+              style={styles.newTopicButton}
+              onClick={() => navigate('/review')}
+            >
+              New Topic / नया विषय
+            </button>
 
             <input
               type="text"
               placeholder="Search topics / विषय खोजें"
               style={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
+
           </div>
         </div>
       </div>
@@ -105,39 +130,46 @@ function SportsPage() {
       <div style={styles.forumHeader}>Professional Options</div>
 
       <div style={styles.gridContainer}>
-        {options.map((option, index) => (
-          <div
-            key={index}
-            style={styles.card}
-            onClick={() => navigate('/review')}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
-          >
-            <div style={styles.iconWrapper}>
-              <div style={styles.iconCircle}>
-                <MdOutlineMenu style={styles.iconStyled} />
-              </div>
-            </div>
-            <div style={styles.titleBlock}>
-              <div style={styles.title}>{option}</div>
-              <div style={styles.topics}>
-                Last post by <strong>{lastModifiedBy}</strong> on{" "}
-                <em>{lastModifiedDate.toLocaleDateString("en-IN", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric"
-                })}</em>
-              </div>
+       {options
+  .filter(option =>
+    option.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+  .map((option, index) => (
+    <div
+      key={index}
+      style={styles.card}
+      onClick={() => navigate('')}
+      
+    >
+      <div style={styles.iconWrapper}>
+        <div style={styles.iconCircle}>
+          <MdOutlineMenu style={styles.iconStyled} />
+        </div>
+      </div>
+      <div style={styles.titleBlock}>
+        <div style={styles.title}>{option}</div>
+        <div style={styles.topics}>
+          Last post by <strong>{lastModifiedBy}</strong> on{" "}
+          <em>{lastModifiedDate.toLocaleDateString("en-IN", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          })}</em>
+        </div>
+      </div>
+    </div>
+))}
 
-            </div>
-          </div>
-        ))}
       </div>
 
-      <div style={styles.belowContent}>
-        <button style={styles.newTopicButton}>New Topic / नया विषय</button>
-        <span style={styles.belowpara}>12 topics Page 1 of 1</span>
-      </div>
+      {isLoggedIn && (
+                <div style={styles.belowContent}>
+                    <button style={styles.newTopicButton} onClick={() => navigate('/review')}>
+                        New Topic / नया विषय
+                    </button>
+                    <span style={styles.belowpara}>12 topics Page 1 of 1</span>
+                </div>
+            )}
 
       <JumpToForum />
 
@@ -158,7 +190,7 @@ function SportsPage() {
       </div>
 
 
-      <div style={styles.belowboardLink}> Board Index</div>
+      <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
 
 
     </div>
@@ -178,7 +210,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     height: '80px',
     color: '#fff',
     padding: '12px 20px',
@@ -234,7 +266,7 @@ const styles = {
     borderRadius: '50%',
   },
   newTopicButton: {
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     color: '#fff',
     padding: '10px 20px',
     border: 'none',
@@ -357,7 +389,7 @@ const styles = {
     borderRadius: '8px',
     height: '120px',
     color: '#fff',
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     cursor: 'pointer',
   },
   iconWrapper: {

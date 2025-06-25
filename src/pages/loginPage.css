@@ -1,18 +1,25 @@
-#loginbtn {
-   box-shadow:  1px 2px 4px black;
+.loginbtn {
    background-color: #01447C;
 }
-#loginbtn:hover {
-   box-shadow:  3px 5px 10px black;
-   background-color: #01294a;   
+.loginbtn:hover {
+   background-color: #013560;   
 }
 
-#refreshbtn {
+
+.login-main-btn {
+   background-color: #01447C;
+}
+.login-main-btn:hover {
+   background-color: #013560;   
+}
+
+
+.refreshbtn {
     background-color: #01447C;
 }
 
-#refreshbtn:hover {
-   background-color: #01294a; 
+.refreshbtn:hover {
+   background-color: #013560; 
     
 }
 

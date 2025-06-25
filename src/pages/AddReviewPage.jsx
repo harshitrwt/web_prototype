@@ -79,7 +79,7 @@ function AddReviewPage() {
                     </div>
                   </div>
       <div style={styles.headerRow}>
-        <span style={styles.indexLink}>↩ Board Index</span>
+        <span style={styles.indexLink}>🏠︎ Board Index</span>
 
         
       </div>
@@ -238,7 +238,7 @@ function AddReviewPage() {
         
 
       </div>
-      <div style={styles.belowboardLink}> Board Index</div>
+      <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
     </div>
     
   );

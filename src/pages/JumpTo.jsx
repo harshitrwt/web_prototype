@@ -9,12 +9,12 @@ function JumpToForum() {
 
   const forums = [
     { title: 'प्रशासन / Admin', route: '/' },
-    { title: 'सीजीएचएस / CGHS', route: '/' },
-    { title: 'सीएसडी कैंटीन / CSD Canteen', route: '/' },
-    { title: 'वित्त / Finance', route: '/' },
-    { title: 'मानव संसाधन / HRD', route: '/' },
-    { title: 'सूचना प्रौद्योगिकी समूह / IT Group', route: '/' },
-    { title: 'उपकरण / Instrumentation', route: '/' },
+    { title: 'सीजीएचएस / CGHS', route: '/dashboard' },
+    { title: 'सीएसडी कैंटीन / CSD Canteen', route: '/canteenPage' },
+    { title: 'वित्त / Finance', route: '/financePage' },
+    { title: 'मानव संसाधन / HRD', route: '/hrdPage' },
+    { title: 'सूचना प्रौद्योगिकी समूह / IT Group', route: '/itgPage' },
+    { title: ' खेल / Sports', route: '/SportsPage' },
     { title: 'पुस्तकालय / Library', route: '/' },
     { title: 'सामग्री प्रबंधन समूह / Material Management Group', route: '/' },
     { title: 'मास्क सुविधा / Mask Facility', route: '/' },
@@ -93,7 +93,7 @@ const styles = {
     transition: "color 0.3s",
   },
   newTopicButton: {
-    backgroundColor: "#01447C",
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     color: "#fff",
     border: "none",
     padding: "8px 16px",
