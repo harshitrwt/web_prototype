@@ -30,3 +30,12 @@
     box-shadow:  5px 5px 5px  black; 
 
 }
+
+.deletebtn{
+      background-color: white;
+      
+}
+
+.deletebtn:hover {
+      background-color: #e0e3e4;
+}

@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdOutlineMenu } from 'react-icons/md';
+import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
+import './loginPage.css'; // Make sure this contains .deletebtn if needed
+
 function ItgPage() {
   const navigate = useNavigate();
   const lastModifiedBy = "saketmital";
@@ -9,6 +11,13 @@ function ItgPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [itgCards, setItgCards] = useState([]);
+  const [options, setOptions] = useState([
+    "Latest Browser",
+    "Guidelines to use Internet",
+    "Antivirus Link",
+    "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR"
+  ]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -22,96 +31,70 @@ function ItgPage() {
     setIsLoggedIn(loggedIn);
   }, []);
 
-  const options = [
-    "Latest Browser",
-    "Guielines to use Internet",
-    "Antivirus Link",
-    "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
+  useEffect(() => {
+    const fetchTopics = () => {
+      const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+      const filtered = all.filter((card) => card.section === "itg");
+      setItgCards(filtered);
+    };
+    fetchTopics();
+    window.addEventListener('focus', fetchTopics);
+    return () => window.removeEventListener('focus', fetchTopics);
+  }, []);
 
-  ];
+  const handleDelete = (idToDelete) => {
+    const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+    const updated = all.filter((item) => item.id !== idToDelete);
+    localStorage.setItem("allTopics", JSON.stringify(updated));
+    setItgCards(updated.filter((card) => card.section === "itg"));
+  };
 
   return (
     <div style={styles.page}>
-      <div
-        style={{
-          ...styles.navbar,
-          height: isMobile ? '60px' : '80px',
-          padding: isMobile ? '8px 12px' : '12px 20px',
-          fontSize: isMobile ? '12px' : '16px'
-        }}
-      >
+      {/* Navbar */}
+      <div style={{ ...styles.navbar, height: isMobile ? '60px' : '80px', padding: isMobile ? '8px 12px' : '12px 20px' }}>
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
             <img
               src="/imglogo.png"
               alt="Logo"
-              style={{
-                ...styles.logo,
-                width: isMobile ? '50px' : '75px',
-                height: isMobile ? '50px' : '75px',
-                cursor: 'pointer',
-              }}
+              style={{ ...styles.logo, width: isMobile ? '50px' : '75px', height: isMobile ? '50px' : '75px', cursor: 'pointer' }}
               onClick={() => navigate('/')}
             />
             <div style={styles.hindiTitle}>
-              <div style={{ fontSize: isMobile ? '12px' : '21px', width: isMobile ? '170px' : 'auto' }}>
-                ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /
-              </div>
-              <div style={{ fontSize: isMobile ? '10px' : '21px' }}>
-                Solid State Physics Laboratory Bulletin Board
-              </div>
+              <div style={{ fontSize: isMobile ? '12px' : '21px', width: isMobile ? '170px' : 'auto' }}>ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /</div>
+              <div style={{ fontSize: isMobile ? '10px' : '21px' }}>Solid State Physics Laboratory Bulletin Board</div>
             </div>
           </div>
         </div>
 
         <div style={styles.navRight}>
           {isLoggedIn ? (
-            <button
-              style={{
-                ...styles.btnlogin,
-                fontSize: isMobile ? '12px' : '14px',
-                padding: isMobile ? '4px 10px' : '8px 16px',
-                cursor: 'pointer',
-              }}
-              disabled
-            >
-              Admin
-            </button>
+            <button style={styles.btnlogin} disabled>Admin</button>
           ) : (
-            <button
-              style={{
-                ...styles.btnlogin,
-                fontSize: isMobile ? '12px' : '14px',
-                padding: isMobile ? '4px 10px' : '8px 16px',
-              }}
-              onClick={() => navigate('/login')}
-            >
-              Login
-            </button>
+            <button style={styles.btnlogin} onClick={() => navigate('/login')}>Login</button>
           )}
-
         </div>
       </div>
 
-
+      {/* Breadcrumb */}
       <div style={styles.headerRow}>
         <span style={styles.indexLink}>🏠︎ Board Index</span>
       </div>
 
-
+      {/* Search + New Topic */}
       <div style={styles.content}>
         <div style={styles.subcontent}>
-          <p style={styles.paragraph}>
-            सूचना प्रौद्योगिकी समूह / Information Technology Group
-          </p>
+          <p style={styles.paragraph}>सूचना प्रौद्योगिकी समूह / Information Technology Group</p>
           <div style={styles.actionRow}>
-            <button
-              style={styles.newTopicButton}
-              onClick={() => navigate('/review')}
-            >
-              New Topic / नया विषय
-            </button>
-
+            {isLoggedIn && (
+              <button
+                style={styles.newTopicButton}
+                onClick={() => navigate('/review', { state: { section: 'itg', from: '/itgpage' } })}
+              >
+                New Topic / नया विषय
+              </button>
+            )}
             <input
               type="text"
               placeholder="Search topics / विषय खोजें"
@@ -119,82 +102,119 @@ function ItgPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-
           </div>
         </div>
       </div>
 
-
-
+      {/* Forum Header */}
       <div style={styles.forumHeader}>Professional Options</div>
 
+      {/* Cards */}
       <div style={styles.gridContainer}>
-        {options
-          .filter(option =>
-            option.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .map((option, index) => (
-            <div
-              key={index}
-              style={styles.card}
-              onClick={() => navigate('')}
-              
-            >
-              <div style={styles.iconWrapper}>
-                <div style={styles.iconCircle}>
-                  <MdOutlineMenu style={styles.iconStyled} />
-                </div>
-              </div>
-              <div style={styles.titleBlock}>
-                <div style={styles.title}>{option}</div>
-                <div style={styles.topics}>
-                  Last post by <strong>{lastModifiedBy}</strong> on{" "}
-                  <em>{lastModifiedDate.toLocaleDateString("en-IN", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                  })}</em>
-                </div>
+        {itgCards.map((card) => (
+          <div key={card.id} style={styles.card}>
+            <div style={styles.iconWrapper}>
+              <div style={styles.iconCircle}>
+                <MdOutlineMenu style={styles.iconStyled} />
               </div>
             </div>
-          ))}
+            {isLoggedIn && (
+              <button
+                onClick={() => handleDelete(card.id)}
+                className="deletebtn"
+                style={{
+                  border: '2px solid white',
+                  borderRadius: '50%',
+                  color: 'black',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  marginLeft: '30vh',
+                  marginTop: '-40px',
+                  marginBottom: '30px'
+                }}
+                title="Delete"
+              >
+                🗑
+              </button>
+            )}
+            <div style={styles.titleBlock}>
+              <div style={styles.title}>{card.subject}</div>
+              <div style={styles.topics}>{card.message}</div>
+              <div style={styles.topics}>
+                Posted on{" "}
+                {new Date(card.timestamp).toLocaleDateString("en-IN", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric"
+                })}
+              </div>
+            </div>
+          </div>
+        ))}
 
+        {/* Static fallback options */}
+        {options.filter(option =>
+          option.toLowerCase().includes(searchQuery.toLowerCase())
+        ).map((option, index) => (
+          <div key={index} style={styles.card}>
+            <div style={styles.iconWrapper}>
+              <div style={styles.iconCircle}>
+                <MdOutlineMenu style={styles.iconStyled} />
+              </div>
+            </div>
+            <div style={styles.titleBlock}>
+              <div style={styles.title}>{option}</div>
+              <div style={styles.topics}>
+                Last post by <strong>{lastModifiedBy}</strong> on{" "}
+                <em>{lastModifiedDate.toLocaleDateString("en-IN", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric"
+                })}</em>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
+      {/* Footer Buttons */}
       {isLoggedIn && (
-                <div style={styles.belowContent}>
-                    <button style={styles.newTopicButton} onClick={() => navigate('/review')}>
-                        New Topic / नया विषय
-                    </button>
-                    <span style={styles.belowpara}>12 topics Page 1 of 1</span>
-                </div>
-            )}
+        <div style={styles.belowContent}>
+          <button
+            style={styles.newTopicButton}
+            onClick={() => navigate('/review', { state: { section: 'itg' } })}
+          >
+            New Topic / नया विषय
+          </button>
+          <span style={styles.belowpara}>12 topics Page 1 of 1</span>
+        </div>
+      )}
 
       <JumpToForum />
 
-
+      {/* Who is Online */}
       <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
         <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
         <span>Users browsing this forum: No registered users and 1 guest</span>
       </div>
 
+      {/* Forum Permissions */}
       <div style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <span style={{ fontWeight: 'bold' }}>FORUM PERMISSIONS</span>
         <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
-        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> post new topics in the forum</span>
-        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> reply to topics in the forum</span>
-        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> edit your posts in the forum</span>
-        <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> delete your posts in the forum</span>
+        <span>You <strong>cannot</strong> post new topics in the forum</span>
+        <span>You <strong>cannot</strong> reply to topics in the forum</span>
+        <span>You <strong>cannot</strong> edit your posts in the forum</span>
+        <span>You <strong>cannot</strong> delete your posts in the forum</span>
       </div>
 
-
       <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
-
-
     </div>
   );
 }
+
+
 
 const styles = {
   page: {

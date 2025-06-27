@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
+import "./loginPage.css";
+
 
 function CanteenPage() {
     const navigate = useNavigate();
@@ -10,6 +12,7 @@ function CanteenPage() {
     const [isMobile, setIsMobile] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [canteenCards, setCanteenCards] = useState([]);
 
     const [options, setOptions] = useState([
         "CSD Currennt Rate List",
@@ -28,6 +31,22 @@ function CanteenPage() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+
+    useEffect(() => {
+        const fetchTopics = () => {
+            const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+            const filtered = all.filter((card) => card.section === "canteen");
+            setCanteenCards(filtered);
+        };
+
+        fetchTopics();
+
+        window.addEventListener('focus', fetchTopics); // optional auto-refresh
+        return () => window.removeEventListener('focus', fetchTopics);
+    }, []);
+
+
+
     // Login status check
     useEffect(() => {
         const loggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -39,6 +58,14 @@ function CanteenPage() {
         const storedTopics = JSON.parse(localStorage.getItem("canteenTopics")) || [];
         setOptions((prev) => [...prev, ...storedTopics]);
     }, []);
+
+    const handleDelete = (idToDelete) => {
+        const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+        const updated = all.filter((item) => item.id !== idToDelete);
+        localStorage.setItem("allTopics", JSON.stringify(updated));
+        setCanteenCards(updated.filter((card) => card.section === "canteen"));
+    };
+
 
     return (
         <div style={styles.page}>
@@ -114,7 +141,8 @@ function CanteenPage() {
                         {isLoggedIn && (
                             <button
                                 style={styles.newTopicButton}
-                                onClick={() => navigate('/review')}
+                                onClick={() => navigate('/review', { state: { section: 'canteen', from: '/canteenpage' } })}
+
                             >
                                 New Topic / नया विषय
                             </button>
@@ -135,16 +163,52 @@ function CanteenPage() {
             <div style={styles.forumHeader}>Professional Options</div>
 
             <div style={styles.gridContainer}>
+                {canteenCards.map((card) => (
+                    <div key={card.id} style={styles.card}>
+                        <div style={styles.iconWrapper}>
+                            <div style={styles.iconCircle}>
+                                <MdOutlineMenu style={styles.iconStyled} />
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => handleDelete(card.id)}
+                            className='deletebtn'
+                            style={{
+                                border: '2px solid white',
+                                borderRadius: '50%',
+                                color: 'black',
+                                cursor: 'pointer',
+                                fontSize: '18px',
+                                marginLeft: '30vh', 
+                                marginTop: '-40px', 
+                                marginBottom: '30px', 
+                            }}
+                            title="Delete"
+                        >
+                            🗑
+                        </button>
+                        <div style={styles.titleBlock}>
+                            <div style={styles.title}>{card.subject}</div>
+                            <div style={styles.topics}>{card.message}</div>
+                            <div style={styles.topics}>
+                                Posted on{" "}
+                                {new Date(card.timestamp).toLocaleDateString("en-IN", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                {/* 👇 Predefined dummy topics */}
                 {options
                     .filter(option =>
                         option.toLowerCase().includes(searchQuery.toLowerCase())
                     )
                     .map((option, index) => (
-                        <div
-                            key={index}
-                            style={styles.card}
-                            onClick={() => navigate('')}
-                        >
+                        <div key={index} style={styles.card}>
                             <div style={styles.iconWrapper}>
                                 <div style={styles.iconCircle}>
                                     <MdOutlineMenu style={styles.iconStyled} />
