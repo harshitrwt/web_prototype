@@ -65,7 +65,6 @@ function MainPage() {
   });
 
   return (
-<<<<<<< HEAD
     <div className="p-4" style={styles.page}>
 
       <div
@@ -76,16 +75,6 @@ function MainPage() {
           fontSize: isMobile ? '12px' : '16px'
         }}
       >
-=======
-    <div style={styles.page}>
-      {/* Navbar */}
-      <div style={{
-        ...styles.navbar,
-        height: isMobile ? '60px' : '80px',
-        padding: isMobile ? '8px 12px' : '12px 20px',
-        fontSize: isMobile ? '12px' : '16px'
-      }}>
->>>>>>> 2ff9ed01ad8ffbacdd3c0cc3c4e8fe537b3c4aa3
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
             <img
