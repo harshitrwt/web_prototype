@@ -38,7 +38,7 @@ function MainPage() {
   });
 
   return (
-    <div style={styles.page}>
+    <div className="p-4" style={styles.page}>
 
       <div
         style={{
