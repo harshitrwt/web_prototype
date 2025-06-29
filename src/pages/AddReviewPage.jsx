@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect} from "react";
-import { MdSearch } from "react-icons/md";
-import { useParams } from 'react-router-dom';
+import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const emojis = ["😀", "😂", "😍", "👍", "🙏", "🔥", "🎉", "💡", "✅", "❌"];
 
@@ -10,20 +9,34 @@ function AddReviewPage() {
   const [file, setFile] = useState(null);
   const [activeTab, setActiveTab] = useState("Options");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const textareaRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
-    
-      useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-      }, []);
+  const textareaRef = useRef(null);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const section = location.state?.section || "itg";
+
+  const sectionTitles = {
+    canteen: "सीएसडी कैंटीन / CSD Canteen",
+    financepage: "वित्त / Finance",
+    hrd: "मानव संसाधन विकास / Human Resource Development",
+    sports: "खेल / Sports",
+    CGHS: "केंद्रीय स्वास्थ्य सेवा / Central Government Health Scheme",
+    itg: "सूचना प्रौद्योगिकी समूह / Information Technology Group"
+  };
+  const headingText = sectionTitles[section];
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const handleFileUpload = (e) => {
     setFile(e.target.files[0]);
   };
 
- 
   const addEmoji = (emoji) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -34,59 +47,84 @@ function AddReviewPage() {
       message.substring(0, start) + emoji + message.substring(end);
     setMessage(newText);
 
-
     setTimeout(() => {
       textarea.selectionStart = textarea.selectionEnd = start + emoji.length;
       textarea.focus();
     }, 0);
   };
 
+  const handleSubmit = () => {
+  if (!subject.trim() || !message.trim()) {
+    alert("Please enter both subject and message.");
+    return;
+  }
+
+  const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
+
+  const newTopic = {
+    id: Date.now(),
+    subject,
+    message,
+    section, // e.g. "canteen"
+    timestamp: new Date().toISOString()
+  };
+
+  const updated = [newTopic, ...allTopics];
+  localStorage.setItem("allTopics", JSON.stringify(updated));
+
+  // ✅ Go back to the page the user came from (like /canteenpage)
+  navigate(location.state?.from || "/");
+};
+
+
+
   return (
     <div style={styles.wrapper}>
+      {/* Navbar */}
       <div
-                    style={{
-                      ...styles.navbar,
-                      height: isMobile ? '60px' : '80px',
-                      padding: isMobile ? '8px 12px' : '12px 20px',
-                      fontSize: isMobile ? '12px' : '16px'
-                    }}
-                  >
-                    <div style={styles.navLeft}>
-                      <div style={styles.logoTitleWrapper}>
-                        <img
-                          src="/imglogo.png"
-                          alt="Logo"
-                          style={{
-                            ...styles.logo,
-                            width: isMobile ? '50px' : '75px',
-                            height: isMobile ? '50px' : '75px'
-                          }}
-                        />
-                        <div style={styles.hindiTitle}>
-                          <div style={{ fontSize: isMobile ? '12px' : '21px' , width: isMobile ? '170px' : 'auto' }}>
-                             ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /
-                          </div>
-                          <div style={{ fontSize: isMobile ? '10px' : '21px' }}>
-                            Solid State Physics Laboratory Bulletin Board
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-            
-                    <div style={styles.navRight}>
-                      
-
-                    </div>
-                  </div>
-      <div style={styles.headerRow}>
-        <span style={styles.indexLink}>↩ Board Index</span>
-
-        
+        style={{
+          ...styles.navbar,
+          height: isMobile ? "60px" : "80px",
+          padding: isMobile ? "8px 12px" : "12px 20px",
+          fontSize: isMobile ? "12px" : "16px",
+        }}
+      >
+        <div style={styles.navLeft}>
+          <div style={styles.logoTitleWrapper}>
+            <img
+              src="/imglogo.png"
+              alt="Logo"
+              style={{
+                ...styles.logo,
+                width: isMobile ? "50px" : "75px",
+                height: isMobile ? "50px" : "75px",
+              }}
+            />
+            <div style={styles.hindiTitle}>
+              <div
+                style={{
+                  fontSize: isMobile ? "12px" : "21px",
+                  width: isMobile ? "170px" : "auto",
+                }}
+              >
+                ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /
+              </div>
+              <div style={{ fontSize: isMobile ? "10px" : "21px" }}>
+                Solid State Physics Laboratory Bulletin Board
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={styles.navRight}></div>
       </div>
-      <h2 style={styles.heading}>
-        सूचना प्रौद्योगिकी समूह / Information Technology Group
-      </h2>
 
+      {/* Title */}
+      <div style={styles.headerRow}>
+        <span style={styles.indexLink}>🏠︎ Board Index</span>
+      </div>
+      <h2 style={styles.heading}>{headingText}</h2>
+
+      {/* Form */}
       <div style={styles.form}>
         <p style={styles.subheading}>POST A NEW TOPIC</p>
         <span style={{ borderBottom: "1px solid grey", width: "100%" }}></span>
@@ -136,11 +174,14 @@ function AddReviewPage() {
             </div>
           )}
         </div>
+
         <div style={styles.buttonGroup}>
           <button style={styles.button}>Load draft</button>
           <button style={styles.button}>Save draft</button>
           <button style={styles.button}>Preview</button>
-          <button style={styles.button}>Submit</button>
+          <button style={styles.button} onClick={handleSubmit}>
+            Submit
+          </button>
         </div>
 
         {/* Tabs */}
@@ -159,30 +200,6 @@ function AddReviewPage() {
             </button>
           ))}
         </div>
-
-        {/* Tab content */}
-        {activeTab === "Options" && (
-          <div style={styles.options}>
-            <label>
-              <input type="checkbox" /> Disable BBCode
-            </label>
-            <label>
-              <input type="checkbox" /> Disable smilies
-            </label>
-            <label>
-              <input type="checkbox" /> Do not automatically parse URLs
-            </label>
-            <label>
-              <input type="checkbox" /> Attach a signature
-            </label>
-            <label>
-              <input type="checkbox" /> Notify me when a reply is posted
-            </label>
-            <label>
-              <input type="checkbox" /> Lock topic
-            </label>
-          </div>
-        )}
 
         {activeTab === "Attachments" && (
           <div style={styles.attachments}>
@@ -209,24 +226,27 @@ function AddReviewPage() {
           </div>
         )}
 
+        {activeTab === "Options" && (
+          <div style={styles.options}>
+            <label><input type="checkbox" /> Disable BBCode</label>
+            <label><input type="checkbox" /> Disable smilies</label>
+            <label><input type="checkbox" /> Do not automatically parse URLs</label>
+            <label><input type="checkbox" /> Attach a signature</label>
+            <label><input type="checkbox" /> Notify me when a reply is posted</label>
+            <label><input type="checkbox" /> Lock topic</label>
+          </div>
+        )}
+
         {activeTab === "Poll creation" && (
           <div style={{ marginTop: 20 }}>Poll creation options here (if any)</div>
         )}
 
         <div style={styles.postType}>
           <span>Post topic as:</span>
-          <label>
-            <input type="radio" name="type" /> Normal
-          </label>
-          <label>
-            <input type="radio" name="type" /> Sticky
-          </label>
-          <label>
-            <input type="radio" name="type" /> Announce
-          </label>
-          <label>
-            <input type="radio" name="type" /> Global
-          </label>
+          <label><input type="radio" name="type" /> Normal</label>
+          <label><input type="radio" name="type" /> Sticky</label>
+          <label><input type="radio" name="type" /> Announce</label>
+          <label><input type="radio" name="type" /> Global</label>
         </div>
 
         <div style={styles.stickyControl}>
@@ -235,12 +255,10 @@ function AddReviewPage() {
           </label>
           <p>Enter 0 for a never-ending Sticky/Announcement.</p>
         </div>
-        
-
       </div>
-      <div style={styles.belowboardLink}> Board Index</div>
+
+      <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
     </div>
-    
   );
 }
 

@@ -1,16 +1,25 @@
-#loginbtn {
-   box-shadow:  1px 2px 4px black;
+.loginbtn {
+   background-color: #01447C;
 }
-#loginbtn:hover {
-   box-shadow:  3px 5px 10px black;  
-}
-
-#refreshbtn {
-    background-color: #3b82f6;
+.loginbtn:hover {
+   background-color: #013560;   
 }
 
-#refreshbtn:hover {
-   background-color: #10b981; 
+
+.login-main-btn {
+   background-color: #01447C;
+}
+.login-main-btn:hover {
+   background-color: #013560;   
+}
+
+
+.refreshbtn {
+    background-color: #01447C;
+}
+
+.refreshbtn:hover {
+   background-color: #013560; 
     
 }
 
@@ -18,6 +27,15 @@
     box-shadow:  2px 4px 8px  black;
 }
 #container:hover {
-    box-shadow:  16px 32px 64px  black; 
+    box-shadow:  5px 5px 5px  black; 
 
+}
+
+.deletebtn{
+      background-color: white;
+      
+}
+
+.deletebtn:hover {
+      background-color: #e0e3e4;
 }

@@ -1,17 +1,45 @@
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdOutlineMenu } from 'react-icons/md';
-import { useEffect, useState } from 'react';
+import { MdSearch, MdOutlineMenu, MdArrowDropDown } from 'react-icons/md';
+import { useEffect, useRef, useState } from 'react';
+import "./loginPage.css";
 
 function MainPage() {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
-  const [search, setSearch] = useState(""); 
+  const [search, setSearch] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+  localStorage.removeItem('isLoggedIn');
+  setIsLoggedIn(false);
+  setShowDropdown(false);
+  navigate('/login');
+  window.location.reload(); 
+};
+
 
   const forums = [
     { title: 'प्रशासन / Admin', topics: 259, route: '/' },
@@ -20,17 +48,16 @@ function MainPage() {
     { title: 'वित्त / Finance', topics: 10, route: '/financePage' },
     { title: 'मानव संसाधन / HRD', topics: 16, route: '/hrdPage' },
     { title: 'सूचना प्रौद्योगिकी समूह / IT Group', topics: 65, route: '/itgPage' },
-    { title: 'उपकरण / Instrumentation', topics: 2, route: '/instrumentation' },
-    { title: 'पुस्तकालय / Library', topics: 27, route: '/library' },
-    { title: 'सामग्री प्रबंधन समूह / Material Management Group', topics: 52, route: '/mmg' },
-    { title: 'मास्क सुविधा / Mask Facility', topics: 5, route: '/mask' },
-    { title: 'जनता / Public', topics: 38, route: '/public' },
-    { title: 'क्यूएमएस समूह / QMS Group', topics: 4, route: '/qms' },
-    { title: 'गोपनीय अनुभाग / Confidential', topics: 21, route: '/confidential' },
+    { title: 'उपकरण / Instrumentation', topics: 2, route: '/' },
+    { title: 'पुस्तकालय / Library', topics: 27, route: '/' },
+    { title: 'सामग्री प्रबंधन समूह / Material Management Group', topics: 52, route: '/' },
+    { title: 'मास्क सुविधा / Mask Facility', topics: 5, route: '/' },
+    { title: 'जनता / Public', topics: 38, route: '/' },
+    { title: 'क्यूएमएस समूह / QMS Group', topics: 4, route: '/' },
+    { title: 'गोपनीय अनुभाग / Confidential', topics: 21, route: '/' },
     { title: 'खेल / Sports', topics: 2, route: '/sportsPage' },
-    { title: 'कार्यशाला / Workshop', topics: 2, route: '/workshop' }
+    { title: 'कार्यशाला / Workshop', topics: 2, route: '/' }
   ];
-
 
   const filteredForums = forums.filter(forum => {
     const englishTitle = forum.title.split('/')[1]?.trim().toLowerCase() || '';
@@ -39,15 +66,13 @@ function MainPage() {
 
   return (
     <div style={styles.page}>
-
-      <div
-        style={{
-          ...styles.navbar,
-          height: isMobile ? '60px' : '80px',
-          padding: isMobile ? '8px 12px' : '12px 20px',
-          fontSize: isMobile ? '12px' : '16px'
-        }}
-      >
+      {/* Navbar */}
+      <div style={{
+        ...styles.navbar,
+        height: isMobile ? '60px' : '80px',
+        padding: isMobile ? '8px 12px' : '12px 20px',
+        fontSize: isMobile ? '12px' : '16px'
+      }}>
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
             <img
@@ -73,16 +98,42 @@ function MainPage() {
         </div>
 
         <div style={styles.navRight}>
-          <button
-            style={{
-              ...styles.btnlogin,
-              fontSize: isMobile ? '12px' : '14px',
-              padding: isMobile ? '4px 10px' : '8px 16px'
-            }}
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </button>
+          {isLoggedIn ? (
+            <div ref={dropdownRef} style={{ position: 'relative' }}>
+              <button
+                className='login-main-btn'
+                style={{
+                  ...styles.btnlogin,
+                  fontSize: isMobile ? '12px' : '14px',
+                  padding: isMobile ? '4px 10px' : '8px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                Admin <MdArrowDropDown />
+              </button>
+              {showDropdown && (
+                <div style={styles.dropdown}>
+                  <div style={styles.dropdownItem} onClick={handleLogout}>Logout</div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              className='login-main-btn'
+              style={{
+                ...styles.btnlogin,
+                fontSize: isMobile ? '12px' : '14px',
+                padding: isMobile ? '4px 10px' : '8px 16px'
+              }}
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </button>
+          )}
+
           {!isMobile && (
             <>
               <input
@@ -100,42 +151,32 @@ function MainPage() {
                   width: '200px',
                 }}
               />
-              <MdSearch
-                style={{
-                  fontSize: '24px',
-                  cursor: 'pointer'
-                }}
-              />
+              <MdSearch style={{ fontSize: '24px', cursor: 'pointer' }} />
             </>
           )}
         </div>
       </div>
 
-      <div
-        style={{
-          ...styles.headerRow,
-          padding: isMobile ? '8px 12px' : '10px 20px',
-          flexDirection: isMobile ? 'column' : 'row',
-          alignItems: isMobile ? 'flex-start' : 'center',
-          gap: isMobile ? '6px' : '0px',
-        }}
-      >
-        <span
-          style={{
-            ...styles.indexLink,
-            fontSize: isMobile ? '14px' : '20px',
-            margin: isMobile ? '10px 0 0 0' : '85px 0 0 0',
-          }}
-        >
-          Board Index
+      {/* Header */}
+      <div style={{
+        ...styles.headerRow,
+        padding: isMobile ? '8px 12px' : '10px 20px',
+        flexDirection: isMobile ? 'column' : 'row',
+        alignItems: isMobile ? 'flex-start' : 'center',
+        gap: isMobile ? '6px' : '0px',
+      }}>
+        <span style={{
+          ...styles.indexLink,
+          fontSize: isMobile ? '14px' : '20px',
+          margin: isMobile ? '10px 0 0 0' : '85px 0 0 0',
+        }}>
+          🏠︎ Board Index
         </span>
-        <span
-          style={{
-            ...styles.time,
-            fontSize: isMobile ? '12px' : '14px',
-            marginTop: isMobile ? '0' : '90px',
-          }}
-        >
+        <span style={{
+          ...styles.time,
+          fontSize: isMobile ? '12px' : '14px',
+          marginTop: isMobile ? '0' : '90px',
+        }}>
           It is currently {new Date().toLocaleString('en-GB', {
             day: '2-digit',
             month: 'short',
@@ -145,9 +186,9 @@ function MainPage() {
             hour12: false
           }).replace(',', '')}
         </span>
-
       </div>
 
+      {/* Forum Section */}
       <div style={styles.forumHeader}>Forum</div>
 
       <div style={styles.gridContainer}>
@@ -168,14 +209,13 @@ function MainPage() {
               >
                 {forum.title}
               </div>
-
               <div style={styles.topics}>Topics: {forum.topics}</div>
             </div>
           </div>
         ))}
       </div>
 
-      <div style={styles.belowboardLink}>Board Index</div>
+      <div style={styles.belowboardLink}>🏠︎ Board Index</div>
     </div>
   );
 }
@@ -192,7 +232,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     color: '#fff',
     fontFamily: 'monospace',
     fontWeight: 'bold',
@@ -230,7 +270,6 @@ const styles = {
     gap: '12px',
   },
   btnlogin: {
-    backgroundColor: '#01447C',
     color: '#fff',
     border: '1px solid #fff',
     borderRadius: '4px',
@@ -273,7 +312,7 @@ const styles = {
     backgroundColor: '#f1f1f1',
   },
   card: {
-    backgroundColor: '#01447C',
+    background: 'linear-gradient(to right, #0d1a4a, #01447D)',
     color: '#fff',
     border: '2px solid #000',
     padding: '20px',
@@ -326,6 +365,29 @@ const styles = {
     fontSize: '16px',
     border: '1px solid black',
     marginTop: '20px',
+  },
+  btnlogin: {
+    color: '#fff',
+    border: '1px solid #fff',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    backgroundColor: '#fff',
+    color: '#000',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    width: '120px',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+    zIndex: 10,
+  },
+  dropdownItem: {
+    padding: '10px',
+    cursor: 'pointer',
+    borderBottom: '1px solid #eee',
   },
 };
 
