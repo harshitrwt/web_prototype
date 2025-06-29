@@ -2,12 +2,28 @@ import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
+import "./loginPage.css";
+
+
 function CanteenPage() {
     const navigate = useNavigate();
     const lastModifiedBy = "saketmital";
     const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
     const [isMobile, setIsMobile] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [canteenCards, setCanteenCards] = useState([]);
 
+    const [options, setOptions] = useState([
+        "CSD Currennt Rate List",
+        "CSD Smart Card Renewal Form",
+        "CSD own Diagnostic Laboratories",
+        "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
+        "CSD COVID-19 Orders",
+        "CSD Claim Forms"
+    ]);
+
+    // Responsive handling
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth <= 768);
         checkMobile();
@@ -15,25 +31,51 @@ function CanteenPage() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const options = [
-        "CSD Currennt Rate List",
-        "CSD Smart Card Renewal Form",
-        "CSD own Diagnostic Laboratories",
-        "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
-        "CSD COVID-19 Orders",
-        "CSD Claim Forms",
-    ];
+
+    useEffect(() => {
+        const fetchTopics = () => {
+            const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+            const filtered = all.filter((card) => card.section === "canteen");
+            setCanteenCards(filtered);
+        };
+
+        fetchTopics();
+
+        window.addEventListener('focus', fetchTopics); // optional auto-refresh
+        return () => window.removeEventListener('focus', fetchTopics);
+    }, []);
+
+
+
+    // Login status check
+    useEffect(() => {
+        const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+        setIsLoggedIn(loggedIn);
+    }, []);
+
+    // Load user-added topics from localStorage
+    useEffect(() => {
+        const storedTopics = JSON.parse(localStorage.getItem("canteenTopics")) || [];
+        setOptions((prev) => [...prev, ...storedTopics]);
+    }, []);
+
+    const handleDelete = (idToDelete) => {
+        const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+        const updated = all.filter((item) => item.id !== idToDelete);
+        localStorage.setItem("allTopics", JSON.stringify(updated));
+        setCanteenCards(updated.filter((card) => card.section === "canteen"));
+    };
+
 
     return (
         <div style={styles.page}>
-            <div
-                style={{
-                    ...styles.navbar,
-                    height: isMobile ? '60px' : '80px',
-                    padding: isMobile ? '8px 12px' : '12px 20px',
-                    fontSize: isMobile ? '12px' : '16px'
-                }}
-            >
+
+            <div style={{
+                ...styles.navbar,
+                height: isMobile ? '60px' : '80px',
+                padding: isMobile ? '8px 12px' : '12px 20px',
+                fontSize: isMobile ? '12px' : '16px'
+            }}>
                 <div style={styles.navLeft}>
                     <div style={styles.logoTitleWrapper}>
                         <img
@@ -59,89 +101,145 @@ function CanteenPage() {
                 </div>
 
                 <div style={styles.navRight}>
-                    <button
-                        style={{
-                            ...styles.btnlogin,
-                            fontSize: isMobile ? '12px' : '14px',
-                            padding: isMobile ? '4px 10px' : '8px 16px'
-                        }}
-                        onClick={() => navigate('/login')}
-                    >
-                        Login
-                    </button>
-                    <MdSearch style={{ fontSize: isMobile ? '16px' : '18px', cursor: 'pointer' }} />
-                </div>
-            </div>
+                    {isLoggedIn ? (
+                        <button
+                            style={{
+                                ...styles.btnlogin,
+                                fontSize: isMobile ? '12px' : '14px',
+                                padding: isMobile ? '4px 10px' : '8px 16px',
+                                cursor: 'pointer',
+                            }}
+                            disabled
+                        >
+                            Admin
+                        </button>
+                    ) : (
+                        <button
+                            style={{
+                                ...styles.btnlogin,
+                                fontSize: isMobile ? '12px' : '14px',
+                                padding: isMobile ? '4px 10px' : '8px 16px',
+                            }}
+                            onClick={() => navigate('/login')}
+                        >
+                            Login
+                        </button>
+                    )}
 
+                </div>
+
+            </div>
 
             <div style={styles.headerRow}>
-                <span style={styles.indexLink}>↩ Board Index</span>
+                <span style={styles.indexLink}>🏠︎ Board Index</span>
             </div>
-
 
             <div style={styles.content}>
                 <div style={styles.subcontent}>
-                    <p style={styles.paragraph}>
-                        विषय खोजें / CSD Canteen
-                    </p>
+                    <p style={styles.paragraph}>विषय खोजें / CSD Canteen</p>
                     <div style={styles.actionRow}>
-                        <button
-                            style={styles.newTopicButton}
-                            onClick={() => navigate('/review')}
-                        >
-                            New Topic / नया विषय
-                        </button>
+                        {isLoggedIn && (
+                            <button
+                                style={styles.newTopicButton}
+                                onClick={() => navigate('/review', { state: { section: 'canteen', from: '/canteenpage' } })}
+
+                            >
+                                New Topic / नया विषय
+                            </button>
+                        )}
 
                         <input
                             type="text"
                             placeholder="Search topics / विषय खोजें"
                             style={styles.searchInput}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
+
                     </div>
                 </div>
             </div>
 
-
-
             <div style={styles.forumHeader}>Professional Options</div>
 
             <div style={styles.gridContainer}>
-                {options.map((option, index) => (
-                    <div
-                        key={index}
-                        style={styles.card}
-                        onClick={() => navigate('/review')}
-                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
-                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#01447C')}
-                    >
+                {canteenCards.map((card) => (
+                    <div key={card.id} style={styles.card}>
                         <div style={styles.iconWrapper}>
                             <div style={styles.iconCircle}>
                                 <MdOutlineMenu style={styles.iconStyled} />
                             </div>
                         </div>
+                        <button
+                            onClick={() => handleDelete(card.id)}
+                            className='deletebtn'
+                            style={{
+                                border: '2px solid white',
+                                borderRadius: '50%',
+                                color: 'black',
+                                cursor: 'pointer',
+                                fontSize: '18px',
+                                marginLeft: '30vh', 
+                                marginTop: '-40px', 
+                                marginBottom: '30px', 
+                            }}
+                            title="Delete"
+                        >
+                            🗑
+                        </button>
                         <div style={styles.titleBlock}>
-                            <div style={styles.title}>{option}</div>
+                            <div style={styles.title}>{card.subject}</div>
+                            <div style={styles.topics}>{card.message}</div>
                             <div style={styles.topics}>
-                                Last post by <strong>{lastModifiedBy}</strong> on{" "}
-                                <em>{lastModifiedDate.toLocaleDateString("en-IN", {
+                                Posted on{" "}
+                                {new Date(card.timestamp).toLocaleDateString("en-IN", {
                                     year: "numeric",
                                     month: "long",
-                                    day: "numeric"
-                                })}</em>
+                                    day: "numeric",
+                                })}
                             </div>
-
                         </div>
                     </div>
                 ))}
+
+                {/* 👇 Predefined dummy topics */}
+                {options
+                    .filter(option =>
+                        option.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map((option, index) => (
+                        <div key={index} style={styles.card}>
+                            <div style={styles.iconWrapper}>
+                                <div style={styles.iconCircle}>
+                                    <MdOutlineMenu style={styles.iconStyled} />
+                                </div>
+                            </div>
+                            <div style={styles.titleBlock}>
+                                <div style={styles.title}>{option}</div>
+                                <div style={styles.topics}>
+                                    Last post by <strong>{lastModifiedBy}</strong> on{" "}
+                                    <em>{lastModifiedDate.toLocaleDateString("en-IN", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                    })}</em>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
             </div>
 
-            <div style={styles.belowContent}>
-                <button style={styles.newTopicButton}>New Topic / नया विषय</button>
-                <span style={styles.belowpara}>12 topics Page 1 of 1</span>
-            </div>
+            {isLoggedIn && (
+                <div style={styles.belowContent}>
+                    <button style={styles.newTopicButton} onClick={() => navigate('/review')}>
+                        New Topic / नया विषय
+                    </button>
+                    <span style={styles.belowpara}>12 topics Page 1 of 1</span>
+                </div>
+            )}
 
             <JumpToForum />
-
 
             <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
@@ -158,10 +256,7 @@ function CanteenPage() {
                 <span>You <span style={{ fontWeight: 'bold' }}>cannot</span> delete your posts in the forum</span>
             </div>
 
-
-            <div style={styles.belowboardLink}> Board Index</div>
-
-
+            <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
         </div>
     );
 }
@@ -179,7 +274,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#01447C',
+        background: 'linear-gradient(to right, #0d1a4a, #01447D)',
         height: '80px',
         color: '#fff',
         padding: '12px 20px',
@@ -235,7 +330,7 @@ const styles = {
         borderRadius: '50%',
     },
     newTopicButton: {
-        backgroundColor: '#01447C',
+        background: 'linear-gradient(to right, #0d1a4a, #01447D)',
         color: '#fff',
         padding: '10px 20px',
         border: 'none',
@@ -358,7 +453,7 @@ const styles = {
         borderRadius: '8px',
         height: '120px',
         color: '#fff',
-        backgroundColor: '#01447C',
+        background: 'linear-gradient(to right, #0d1a4a, #01447D)',
         cursor: 'pointer',
     },
     iconWrapper: {
