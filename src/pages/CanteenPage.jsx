@@ -23,7 +23,7 @@ function CanteenPage() {
         "CSD Claim Forms"
     ]);
 
-    // Responsive handling
+    
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth <= 768);
         checkMobile();
@@ -41,19 +41,19 @@ function CanteenPage() {
 
         fetchTopics();
 
-        window.addEventListener('focus', fetchTopics); // optional auto-refresh
+        window.addEventListener('focus', fetchTopics); 
         return () => window.removeEventListener('focus', fetchTopics);
     }, []);
 
 
 
-    // Login status check
+    
     useEffect(() => {
         const loggedIn = localStorage.getItem("isLoggedIn") === "true";
         setIsLoggedIn(loggedIn);
     }, []);
 
-    // Load user-added topics from localStorage
+    
     useEffect(() => {
         const storedTopics = JSON.parse(localStorage.getItem("canteenTopics")) || [];
         setOptions((prev) => [...prev, ...storedTopics]);
