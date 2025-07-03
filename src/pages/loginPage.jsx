@@ -45,12 +45,13 @@ function LoginPage() {
     }
     
     setError("");
+    localStorage.setItem('isLoggedIn', 'true');
     setLoading(true);
 
-    // wait 2 s, then navigate
+    // wait 1.5 sec, then navigate
     setTimeout(() => {
       navigate("/main");
-    }, 1000);
+    }, 1500);
     
   };
 
