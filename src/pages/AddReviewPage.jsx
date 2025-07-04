@@ -11,6 +11,12 @@ function AddReviewPage() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [drafts, setDrafts] = useState([]);
+  const [selectedDraftId, setSelectedDraftId] = useState(null);
+  const [loadError, setLoadError] = useState("");
+
+
+
   const textareaRef = useRef(null);
 
   const location = useLocation();
@@ -32,6 +38,17 @@ function AddReviewPage() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
+    setDrafts(saved);
+  }, []);
+
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
+    setDrafts(saved);
   }, []);
 
   const handleFileUpload = (e) => {
@@ -66,16 +83,47 @@ function AddReviewPage() {
       id: Date.now(),
       subject,
       message,
-      section, // e.g. "canteen"
+      section,
       timestamp: new Date().toISOString()
     };
 
     const updated = [newTopic, ...allTopics];
     localStorage.setItem("allTopics", JSON.stringify(updated));
 
-    // ✅ Go back to the page the user came from (like /canteenpage)
     navigate(location.state?.from || "/");
   };
+  const handleSaveDraft = () => {
+    if (!subject.trim() && !message.trim()) return;
+    const newDraft = { id: Date.now(), subject, message };
+    const updatedDrafts = [newDraft, ...drafts];
+    localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+    setDrafts(updatedDrafts);
+    setSubject("");
+    setMessage("");
+  };
+
+  const handleLoadDraft = () => {
+  if (!selectedDraftId) {
+    setLoadError("Please select a draft to load.");
+    return;
+  }
+
+  const draft = drafts.find(d => d.id === selectedDraftId);
+  if (draft) {
+    setSubject(draft.subject);
+    setMessage(draft.message);
+    setLoadError("");
+  }
+};
+
+
+  const handleDeleteDraft = (id) => {
+    const updated = drafts.filter((d) => d.id !== id);
+    localStorage.setItem("drafts", JSON.stringify(updated));
+    setDrafts(updated);
+    if (selectedDraftId === id) setSelectedDraftId(null);
+  };
+
 
 
 
@@ -177,14 +225,50 @@ function AddReviewPage() {
         </div>
 
         <div style={styles.buttonGroup}>
-          <button style={styles.button}>Load draft</button>
-          <button style={styles.button}>Save draft</button>
+          <button style={styles.button} onClick={handleLoadDraft}>Load draft</button>
+          <button style={styles.button} onClick={handleSaveDraft}>Save draft</button>
           <button style={styles.button} onClick={() => setShowPreview(true)}>Preview</button>
-          <button style={styles.button} onClick={handleSubmit}>
-            Submit
-          </button>
+          <button style={styles.button} onClick={handleSubmit}>Submit</button>
         </div>
-         {showPreview && (
+
+        {loadError && <p style={{ color: "red", marginTop: "5px" }}>{loadError}</p>}
+
+
+        {drafts.length > 0 && (
+          <div style={{ marginTop: "20px" }}>
+            <h4>Saved Drafts:</h4>
+            {drafts.map((draft) => (
+              <div key={draft.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                <input
+                  type="radio"
+                  checked={selectedDraftId === draft.id}
+                  onChange={() => setSelectedDraftId(draft.id)}
+                  style={{ marginRight: '8px' }}
+                />
+                <span style={{ color: '#01447C', cursor: 'pointer', flex: 1 }}>{draft.subject || "[No Subject]"}</span>
+                <button
+                  onClick={() => handleDeleteDraft(draft.id)}
+                  style={{
+                    marginLeft: '10px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: 'red',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+
+
+
+
+        {showPreview && (
           <div style={styles.previewBox}>
             <h3>{subject || "[No Subject]"}</h3>
             <p>{message || "[No Message]"}</p>
@@ -263,8 +347,6 @@ function AddReviewPage() {
           </label>
           <p>Enter 0 for a never-ending Sticky/Announcement.</p>
         </div>
-       
-
       </div>
 
       <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
@@ -504,9 +586,22 @@ const styles = {
     padding: "20px",
     marginTop: "20px",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    maxWidth: "600px",
-    width: "100%",
+    maxWidth: "400px",
+    width: "80%",
     color: "#333",
+  },
+  buttonGroup: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "20px"
+  },
+  button: {
+    padding: "8px 16px",
+    backgroundColor: "#01447C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer"
   },
   belowboardLink: {
     backgroundColor: '#f0f0f0',
