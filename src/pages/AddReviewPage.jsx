@@ -10,6 +10,7 @@ function AddReviewPage() {
   const [activeTab, setActiveTab] = useState("Options");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const textareaRef = useRef(null);
 
   const location = useLocation();
@@ -54,27 +55,27 @@ function AddReviewPage() {
   };
 
   const handleSubmit = () => {
-  if (!subject.trim() || !message.trim()) {
-    alert("Please enter both subject and message.");
-    return;
-  }
+    if (!subject.trim() || !message.trim()) {
+      alert("Please enter both subject and message.");
+      return;
+    }
 
-  const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
+    const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
 
-  const newTopic = {
-    id: Date.now(),
-    subject,
-    message,
-    section, // e.g. "canteen"
-    timestamp: new Date().toISOString()
+    const newTopic = {
+      id: Date.now(),
+      subject,
+      message,
+      section, // e.g. "canteen"
+      timestamp: new Date().toISOString()
+    };
+
+    const updated = [newTopic, ...allTopics];
+    localStorage.setItem("allTopics", JSON.stringify(updated));
+
+    // ✅ Go back to the page the user came from (like /canteenpage)
+    navigate(location.state?.from || "/");
   };
-
-  const updated = [newTopic, ...allTopics];
-  localStorage.setItem("allTopics", JSON.stringify(updated));
-
-  // ✅ Go back to the page the user came from (like /canteenpage)
-  navigate(location.state?.from || "/");
-};
 
 
 
@@ -178,11 +179,18 @@ function AddReviewPage() {
         <div style={styles.buttonGroup}>
           <button style={styles.button}>Load draft</button>
           <button style={styles.button}>Save draft</button>
-          <button style={styles.button}>Preview</button>
+          <button style={styles.button} onClick={() => setShowPreview(true)}>Preview</button>
           <button style={styles.button} onClick={handleSubmit}>
             Submit
           </button>
         </div>
+         {showPreview && (
+          <div style={styles.previewBox}>
+            <h3>{subject || "[No Subject]"}</h3>
+            <p>{message || "[No Message]"}</p>
+            <button onClick={() => setShowPreview(false)}>Close Preview</button>
+          </div>
+        )}
 
         {/* Tabs */}
         <div style={styles.tabs}>
@@ -255,6 +263,8 @@ function AddReviewPage() {
           </label>
           <p>Enter 0 for a never-ending Sticky/Announcement.</p>
         </div>
+       
+
       </div>
 
       <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
@@ -475,25 +485,36 @@ const styles = {
     userSelect: "none",
   },
   messageHeader: {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginTop: "15px",
-},
-emojiTopButton: {
-  background: "transparent",
-  border: "none",
-  fontSize: "22px",
-  cursor: "pointer",
-  userSelect: "none",
-},
-belowboardLink: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: "15px",
+  },
+  emojiTopButton: {
+    background: "transparent",
+    border: "none",
+    fontSize: "22px",
+    cursor: "pointer",
+    userSelect: "none",
+  },
+  previewBox: {
+    backgroundColor: "white",
+    border: "1px solid #ccc",
+    borderRadius: "1px",
+    padding: "20px",
+    marginTop: "20px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    maxWidth: "600px",
+    width: "100%",
+    color: "#333",
+  },
+  belowboardLink: {
     backgroundColor: '#f0f0f0',
     color: 'black',
     padding: '10px 20px',
     height: '100px',
     display: 'flex',
-    font: 'bold',   
+    font: 'bold',
     fontSize: '16px',
     border: '1px solid black',
     marginTop: '20px',
