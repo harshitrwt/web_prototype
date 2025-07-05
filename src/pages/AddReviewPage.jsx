@@ -52,8 +52,15 @@ function AddReviewPage() {
   }, []);
 
   const handleFileUpload = (e) => {
-    setFile(e.target.files[0]);
+    const uploadedFile = e.target.files[0];
+    if (!uploadedFile) return;
+    setFile(uploadedFile);
+
+    // Append file reference in message body
+    const fileLinkText = `\n📎 [${uploadedFile.name}](#uploaded-file)\n`;
+    setMessage((prev) => prev + fileLinkText);
   };
+
 
   const addEmoji = (emoji) => {
     const textarea = textareaRef.current;
@@ -94,27 +101,78 @@ function AddReviewPage() {
   };
   const handleSaveDraft = () => {
     if (!subject.trim() && !message.trim()) return;
-    const newDraft = { id: Date.now(), subject, message };
-    const updatedDrafts = [newDraft, ...drafts];
-    localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
-    setDrafts(updatedDrafts);
-    setSubject("");
-    setMessage("");
+
+    let fileData = null;
+
+    if (file) {
+      fileData = {
+        name: file.name,
+        type: file.type,
+        content: null
+      };
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        fileData.content = reader.result;
+
+        const newDraft = {
+          id: Date.now(),
+          subject,
+          message,
+          file: fileData
+        };
+
+        const updatedDrafts = [newDraft, ...drafts];
+        localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+        setDrafts(updatedDrafts);
+        setSubject("");
+        setMessage("");
+        setFile(null);
+      };
+
+      reader.readAsDataURL(file); // encode as base64
+    } else {
+      const newDraft = {
+        id: Date.now(),
+        subject,
+        message,
+        file: null
+      };
+
+      const updatedDrafts = [newDraft, ...drafts];
+      localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+      setDrafts(updatedDrafts);
+      setSubject("");
+      setMessage("");
+    }
   };
 
-  const handleLoadDraft = () => {
-  if (!selectedDraftId) {
-    setLoadError("Please select a draft to load.");
-    return;
-  }
 
-  const draft = drafts.find(d => d.id === selectedDraftId);
-  if (draft) {
-    setSubject(draft.subject);
-    setMessage(draft.message);
-    setLoadError("");
-  }
-};
+  const handleLoadDraft = () => {
+    if (!selectedDraftId) {
+      setLoadError("Please select a draft to load.");
+      return;
+    }
+
+    const draft = drafts.find(d => d.id === selectedDraftId);
+    if (draft) {
+      setSubject(draft.subject);
+      setMessage(draft.message);
+      setLoadError("");
+
+      if (draft.file) {
+        const blob = fetch(draft.file.content)
+          .then(res => res.blob())
+          .then(blob => {
+            const restoredFile = new File([blob], draft.file.name, { type: draft.file.type });
+            setFile(restoredFile);
+          });
+      } else {
+        setFile(null);
+      }
+    }
+  };
+
 
 
   const handleDeleteDraft = (id) => {
@@ -271,7 +329,24 @@ function AddReviewPage() {
         {showPreview && (
           <div style={styles.previewBox}>
             <h3>{subject || "[No Subject]"}</h3>
-            <p>{message || "[No Message]"}</p>
+            <div style={{ whiteSpace: "pre-wrap" }}>
+              {(message || "[No Message]").split('\n').map((line, idx) =>
+                line.includes('[', idx) && line.includes('](#uploaded-file)') ? (
+                  <div key={idx}>
+                    📎 <a href="#" onClick={(e) => {
+                      e.preventDefault();
+                      if (file) {
+                        const fileURL = URL.createObjectURL(file);
+                        window.open(fileURL, '_blank');
+                      }
+                    }}>{file?.name}</a>
+                  </div>
+                ) : (
+                  <div key={idx}>{line}</div>
+                )
+              )}
+            </div>
+
             <button onClick={() => setShowPreview(false)}>Close Preview</button>
           </div>
         )}
