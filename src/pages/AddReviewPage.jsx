@@ -34,8 +34,15 @@ function AddReviewPage() {
   }, []);
 
   const handleFileUpload = (e) => {
-    setFile(e.target.files[0]);
+    const uploadedFile = e.target.files[0];
+    if (!uploadedFile) return;
+    setFile(uploadedFile);
+
+    // Append file reference in message body
+    const fileLinkText = `\n📎 [${uploadedFile.name}](#uploaded-file)\n`;
+    setMessage((prev) => prev + fileLinkText);
   };
+
 
   const addEmoji = (emoji) => {
     const textarea = textareaRef.current;
@@ -72,9 +79,40 @@ function AddReviewPage() {
   const updated = [newTopic, ...allTopics];
   localStorage.setItem("allTopics", JSON.stringify(updated));
 
-  // ✅ Go back to the page the user came from (like /canteenpage)
-  navigate(location.state?.from || "/");
+    navigate(location.state?.from || "/");
+  };
+  const handleSaveDraft = () => {
+    if (!subject.trim() && !message.trim()) return;
+    const newDraft = { id: Date.now(), subject, message };
+    const updatedDrafts = [newDraft, ...drafts];
+    localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+    setDrafts(updatedDrafts);
+    setSubject("");
+    setMessage("");
+  };
+
+  const handleLoadDraft = () => {
+  if (!selectedDraftId) {
+    setLoadError("Please select a draft to load.");
+    return;
+  }
+
+  const draft = drafts.find(d => d.id === selectedDraftId);
+  if (draft) {
+    setSubject(draft.subject);
+    setMessage(draft.message);
+    setLoadError("");
+  }
 };
+
+
+  const handleDeleteDraft = (id) => {
+    const updated = drafts.filter((d) => d.id !== id);
+    localStorage.setItem("drafts", JSON.stringify(updated));
+    setDrafts(updated);
+    if (selectedDraftId === id) setSelectedDraftId(null);
+  };
+
 
 
 
@@ -224,7 +262,24 @@ function AddReviewPage() {
         {showPreview && (
           <div style={styles.previewBox}>
             <h3>{subject || "[No Subject]"}</h3>
-            <p>{message || "[No Message]"}</p>
+            <div style={{ whiteSpace: "pre-wrap" }}>
+              {(message || "[No Message]").split('\n').map((line, idx) =>
+                line.includes('[', idx) && line.includes('](#uploaded-file)') ? (
+                  <div key={idx}>
+                    📎 <a href="#" onClick={(e) => {
+                      e.preventDefault();
+                      if (file) {
+                        const fileURL = URL.createObjectURL(file);
+                        window.open(fileURL, '_blank');
+                      }
+                    }}>{file?.name}</a>
+                  </div>
+                ) : (
+                  <div key={idx}>{line}</div>
+                )
+              )}
+            </div>
+
             <button onClick={() => setShowPreview(false)}>Close Preview</button>
           </div>
         )}

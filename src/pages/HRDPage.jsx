@@ -17,6 +17,8 @@ function HrdPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hrdCards, setHrdCards] = useState([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [cardToDelete, setCardToDelete] = useState(null);
 
   const options = [
     'Training Registration Form',
@@ -151,18 +153,57 @@ function HrdPage() {
         <MdOutlineMenu style={styles.iconStyled} />
       </div>
       {isLoggedIn && (
-              <button
-                onClick={() => handleDelete(card.id)}
-                className="deletebtn"
-                style={{
-                  border: '2px solid white', borderRadius: '50%', color: 'black', cursor: 'pointer',
-                  fontSize: '18px', marginLeft: '30vh', marginTop: '-40px', marginBottom: '30px'
-                }}
-                title="Delete"
-              >
-                🗑
-              </button>
-            )}
+                            <button
+                                onClick={() => {
+                                    setCardToDelete(card.id);
+                                    setShowDeleteConfirm(true);
+                                }}
+                                className='deletebtn'
+                                style={{
+                                    border: '2px solid white',
+                                    borderRadius: '50%',
+                                    color: 'black',
+                                    cursor: 'pointer',
+                                    fontSize: '18px',
+                                    marginLeft: '30vh',
+                                    marginTop: '-40px',
+                                    marginBottom: '30px',
+                                }}
+                                title="Delete"
+                            >
+                                🗑
+                            </button>
+                        )}
+
+                        {showDeleteConfirm && (
+                            <div style={styles.modalOverlay}>
+                                <div style={styles.modalBox}>
+                                    <h3 style={styles.modalTitle}>Are you sure?</h3>
+                                    <p style={{ color: 'black' }}>This will permanently delete this post.</p>
+                                    <div style={styles.modalButtons}>
+                                        <button
+                                            onClick={() => {
+                                                handleDelete(cardToDelete);
+                                                setShowDeleteConfirm(false);
+                                                setCardToDelete(null);
+                                            }}
+                                            style={styles.deleteButton}
+                                        >
+                                            Delete
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setShowDeleteConfirm(false);
+                                                setCardToDelete(null);
+                                            }}
+                                            style={styles.cancelButton}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
     </div>
     <div style={styles.titleBlock}>
       <div style={styles.title}>{card.subject}</div>
