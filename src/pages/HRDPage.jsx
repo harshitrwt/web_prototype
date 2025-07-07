@@ -1,81 +1,72 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
 import "./loginPage.css";
 
-/**
- * HRDPage.jsx – lists all topics whose `section` === "hrd".
- * Each card links to `/cards/:id` so the detail view (CardDetails.jsx) opens on click.
- */
 function HrdPage() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  /* ---------------- state ---------------- */
+  const lastModifiedBy = "saketmital";
+  const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hrdCards, setHrdCards] = useState([]);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [cardToDelete, setCardToDelete] = useState(null);
 
   const options = [
-    'Training Registration Form',
-    'Completion of Training Form',
-    'CSD own Diagnostic Laboratories',
-    'CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR',
+    "Training Registration Form",
+    "Completion of Training Form",
+    "CSD own Diagnostic Laboratories",
+    "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
   ];
 
-  /* -------------- helpers --------------- */
-  const handleDelete = (id) => {
-    const all = JSON.parse(localStorage.getItem('allTopics') || '[]');
-    const updated = all.filter((t) => t.id !== id);
-    localStorage.setItem('allTopics', JSON.stringify(updated));
-    setHrdCards(updated.filter((t) => t.section === 'hrd'));
+   const handleDelete = (idToDelete) => {
+    const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+    const updated = all.filter((item) => item.id !== idToDelete);
+    localStorage.setItem("allTopics", JSON.stringify(updated));
+    setHrdCards(updated.filter((card) => card.section === "hrd"));
   };
 
-  /* ---------------- effects -------------- */
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth <= 768);
-    onResize();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
-    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
   }, []);
-
   useEffect(() => {
-    const fetch = () => {
-      const all = JSON.parse(localStorage.getItem('allTopics') || '[]');
-      setHrdCards(all.filter((t) => t.section === 'hrd'));
-    };
-    fetch();
-    window.addEventListener('focus', fetch);
-    return () => window.removeEventListener('focus', fetch);
-  }, []);
+  const fetchTopics = () => {
+    const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+    const filtered = all.filter((card) => card.section === "hrd");
+    setHrdCards(filtered);
+  };
 
-  /* keep original redirect after post */
+  fetchTopics();
+
+  window.addEventListener('focus', fetchTopics);
+  return () => window.removeEventListener('focus', fetchTopics);
+}, []);
+
+
   useEffect(() => {
     if (location.state?.justPosted && location.state.section === 'hrd') {
       navigate('/hrdpage', { replace: true });
     }
   }, [location, navigate]);
 
-  /* ---------------- render --------------- */
   return (
     <div style={styles.page}>
-      {/* NAVBAR */}
-      <div
-        style={{
-          ...styles.navbar,
-          height: isMobile ? '60px' : '80px',
-          padding: isMobile ? '8px 12px' : '12px 20px',
-          fontSize: isMobile ? '12px' : '16px',
-        }}
-      >
+      <div style={{
+        ...styles.navbar,
+        height: isMobile ? '60px' : '80px',
+        padding: isMobile ? '8px 12px' : '12px 20px',
+        fontSize: isMobile ? '12px' : '16px'
+      }}>
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
             <img
@@ -93,32 +84,31 @@ function HrdPage() {
               <div style={{ fontSize: isMobile ? '12px' : '21px', width: isMobile ? '170px' : 'auto' }}>
                 ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /
               </div>
-              <div style={{ fontSize: isMobile ? '10px' : '21px' }}>Solid State Physics Laboratory Bulletin Board</div>
+              <div style={{ fontSize: isMobile ? '10px' : '21px' }}>
+                Solid State Physics Laboratory Bulletin Board
+              </div>
             </div>
           </div>
         </div>
+
         <div style={styles.navRight}>
           {isLoggedIn ? (
             <button style={{ ...styles.btnlogin, fontSize: isMobile ? '12px' : '14px', padding: isMobile ? '4px 10px' : '8px 16px' }} disabled>
               Admin
             </button>
           ) : (
-            <button
-              style={{ ...styles.btnlogin, fontSize: isMobile ? '12px' : '14px', padding: isMobile ? '4px 10px' : '8px 16px' }}
-              onClick={() => navigate('/login')}
-            >
+            <button style={{ ...styles.btnlogin, fontSize: isMobile ? '12px' : '14px', padding: isMobile ? '4px 10px' : '8px 16px' }}
+              onClick={() => navigate('/login')}>
               Login
             </button>
           )}
         </div>
       </div>
 
-      {/* BREADCRUMB */}
       <div style={styles.headerRow}>
         <span style={styles.indexLink}>🏠︎ Board Index</span>
       </div>
 
-      {/* TITLE + ACTIONS */}
       <div style={styles.content}>
         <div style={styles.subcontent}>
           <p style={styles.paragraph}>एचआरडी / HRD</p>
@@ -144,7 +134,6 @@ function HrdPage() {
 
       <div style={styles.forumHeader}>Professional Options</div>
 
-      {/* CARDS GRID */}
       <div style={styles.gridContainer}>
         {hrdCards.map((card) => (
   <div key={card.id} style={styles.card}>
@@ -153,57 +142,18 @@ function HrdPage() {
         <MdOutlineMenu style={styles.iconStyled} />
       </div>
       {isLoggedIn && (
-                            <button
-                                onClick={() => {
-                                    setCardToDelete(card.id);
-                                    setShowDeleteConfirm(true);
-                                }}
-                                className='deletebtn'
-                                style={{
-                                    border: '2px solid white',
-                                    borderRadius: '50%',
-                                    color: 'black',
-                                    cursor: 'pointer',
-                                    fontSize: '18px',
-                                    marginLeft: '30vh',
-                                    marginTop: '-40px',
-                                    marginBottom: '30px',
-                                }}
-                                title="Delete"
-                            >
-                                🗑
-                            </button>
-                        )}
-
-                        {showDeleteConfirm && (
-                            <div style={styles.modalOverlay}>
-                                <div style={styles.modalBox}>
-                                    <h3 style={styles.modalTitle}>Are you sure?</h3>
-                                    <p style={{ color: 'black' }}>This will permanently delete this post.</p>
-                                    <div style={styles.modalButtons}>
-                                        <button
-                                            onClick={() => {
-                                                handleDelete(cardToDelete);
-                                                setShowDeleteConfirm(false);
-                                                setCardToDelete(null);
-                                            }}
-                                            style={styles.deleteButton}
-                                        >
-                                            Delete
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setShowDeleteConfirm(false);
-                                                setCardToDelete(null);
-                                            }}
-                                            style={styles.cancelButton}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+              <button
+                onClick={() => handleDelete(card.id)}
+                className="deletebtn"
+                style={{
+                  border: '2px solid white', borderRadius: '50%', color: 'black', cursor: 'pointer',
+                  fontSize: '18px', marginLeft: '30vh', marginTop: '-40px', marginBottom: '30px'
+                }}
+                title="Delete"
+              >
+                🗑
+              </button>
+            )}
     </div>
     <div style={styles.titleBlock}>
       <div style={styles.title}>{card.subject}</div>
@@ -221,9 +171,11 @@ function HrdPage() {
 ))}
 
         {options
-          .filter((o) => o.toLowerCase().includes(searchQuery.toLowerCase()))
-          .map((option, idx) => (
-            <div key={idx} style={styles.card}>
+          .filter(option =>
+            option.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .map((option, index) => (
+            <div key={index} style={styles.card}>
               <div style={styles.iconWrapper}>
                 <div style={styles.iconCircle}>
                   <MdOutlineMenu style={styles.iconStyled} />
@@ -232,14 +184,12 @@ function HrdPage() {
               <div style={styles.titleBlock}>
                 <div style={styles.title}>{option}</div>
                 <div style={styles.topics}>
-                  Last post by <strong>{lastModifiedBy}</strong> on{' '}
-                  <em>
-                    {lastModifiedDate.toLocaleDateString('en-IN', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </em>
+                  Last post by <strong>{lastModifiedBy}</strong> on{" "}
+                  <em>{lastModifiedDate.toLocaleDateString("en-IN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                  })}</em>
                 </div>
               </div>
             </div>
@@ -280,56 +230,6 @@ function HrdPage() {
 
 
 const styles = {
-  modalOverlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
-
-    modalBox: {
-        backgroundColor: '#fff',
-        padding: '20px 30px',
-        borderRadius: '10px',
-        textAlign: 'center',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
-        maxWidth: '320px',
-        width: '90%',
-    },
-
-    modalTitle: {
-        marginBottom: '10px',
-        color: 'black',
-    },
-
-    modalButtons: {
-        marginTop: '20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-
-    deleteButton: {
-        backgroundColor: '#e53935',
-        color: 'white',
-        border: 'none',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-
-    cancelButton: {
-        backgroundColor: '#ccc',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        border: 'none',
-        cursor: 'pointer',
-    },
   page: {
     backgroundColor: '#fff',
     color: '#000',

@@ -8,6 +8,7 @@ import FinancePage from '../pages/FinancePage';
 import HrdPage from '../pages/HRDPage';
 import ItgPage from '../pages/ITGPage';
 import SportsPage from '../pages/SportsPage';
+import CardDetails from '../pages/CardDetails';
 
 const AppRoutes = () => {
   return (
@@ -26,6 +27,7 @@ const AppRoutes = () => {
       <Route path="/hrdPage" element={<HrdPage/>} />
       <Route path="/itgPage" element={<ItgPage/>} />
       <Route path="/SportsPage" element={<SportsPage />} />
+      <Route path="/cards/:id" element={<CardDetails />} />
       
     </Routes>
   );
