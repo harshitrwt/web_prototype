@@ -36,7 +36,7 @@ function MainPage() {
   localStorage.removeItem('isLoggedIn');
   setIsLoggedIn(false);
   setShowDropdown(false);
-  navigate('/login');
+  navigate('/');
   window.location.reload(); 
 };
 

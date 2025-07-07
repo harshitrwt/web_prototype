@@ -1,72 +1,79 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
 import "./loginPage.css";
 
+/**
+ * HRDPage.jsx – lists all topics whose `section` === "hrd".
+ * Each card links to `/cards/:id` so the detail view (CardDetails.jsx) opens on click.
+ */
 function HrdPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const lastModifiedBy = "saketmital";
-  const lastModifiedDate = new Date("2025-06-19T14:30:00Z");
+
+  /* ---------------- state ---------------- */
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hrdCards, setHrdCards] = useState([]);
 
   const options = [
-    "Training Registration Form",
-    "Completion of Training Form",
-    "CSD own Diagnostic Laboratories",
-    "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
+    'Training Registration Form',
+    'Completion of Training Form',
+    'CSD own Diagnostic Laboratories',
+    'CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR',
   ];
 
-   const handleDelete = (idToDelete) => {
-    const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
-    const updated = all.filter((item) => item.id !== idToDelete);
-    localStorage.setItem("allTopics", JSON.stringify(updated));
-    setHrdCards(updated.filter((card) => card.section === "hrd"));
+  /* -------------- helpers --------------- */
+  const handleDelete = (id) => {
+    const all = JSON.parse(localStorage.getItem('allTopics') || '[]');
+    const updated = all.filter((t) => t.id !== id);
+    localStorage.setItem('allTopics', JSON.stringify(updated));
+    setHrdCards(updated.filter((t) => t.section === 'hrd'));
   };
 
+  /* ---------------- effects -------------- */
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(loggedIn);
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
   }, []);
+
   useEffect(() => {
-  const fetchTopics = () => {
-    const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
-    const filtered = all.filter((card) => card.section === "hrd");
-    setHrdCards(filtered);
-  };
+    const fetch = () => {
+      const all = JSON.parse(localStorage.getItem('allTopics') || '[]');
+      setHrdCards(all.filter((t) => t.section === 'hrd'));
+    };
+    fetch();
+    window.addEventListener('focus', fetch);
+    return () => window.removeEventListener('focus', fetch);
+  }, []);
 
-  fetchTopics();
-
-  window.addEventListener('focus', fetchTopics);
-  return () => window.removeEventListener('focus', fetchTopics);
-}, []);
-
-
+  /* keep original redirect after post */
   useEffect(() => {
     if (location.state?.justPosted && location.state.section === 'hrd') {
       navigate('/hrdpage', { replace: true });
     }
   }, [location, navigate]);
 
+  /* ---------------- render --------------- */
   return (
     <div style={styles.page}>
-      <div style={{
-        ...styles.navbar,
-        height: isMobile ? '60px' : '80px',
-        padding: isMobile ? '8px 12px' : '12px 20px',
-        fontSize: isMobile ? '12px' : '16px'
-      }}>
+      {/* NAVBAR */}
+      <div
+        style={{
+          ...styles.navbar,
+          height: isMobile ? '60px' : '80px',
+          padding: isMobile ? '8px 12px' : '12px 20px',
+          fontSize: isMobile ? '12px' : '16px',
+        }}
+      >
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
             <img
@@ -84,31 +91,32 @@ function HrdPage() {
               <div style={{ fontSize: isMobile ? '12px' : '21px', width: isMobile ? '170px' : 'auto' }}>
                 ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /
               </div>
-              <div style={{ fontSize: isMobile ? '10px' : '21px' }}>
-                Solid State Physics Laboratory Bulletin Board
-              </div>
+              <div style={{ fontSize: isMobile ? '10px' : '21px' }}>Solid State Physics Laboratory Bulletin Board</div>
             </div>
           </div>
         </div>
-
         <div style={styles.navRight}>
           {isLoggedIn ? (
             <button style={{ ...styles.btnlogin, fontSize: isMobile ? '12px' : '14px', padding: isMobile ? '4px 10px' : '8px 16px' }} disabled>
               Admin
             </button>
           ) : (
-            <button style={{ ...styles.btnlogin, fontSize: isMobile ? '12px' : '14px', padding: isMobile ? '4px 10px' : '8px 16px' }}
-              onClick={() => navigate('/login')}>
+            <button
+              style={{ ...styles.btnlogin, fontSize: isMobile ? '12px' : '14px', padding: isMobile ? '4px 10px' : '8px 16px' }}
+              onClick={() => navigate('/login')}
+            >
               Login
             </button>
           )}
         </div>
       </div>
 
+      {/* BREADCRUMB */}
       <div style={styles.headerRow}>
         <span style={styles.indexLink}>🏠︎ Board Index</span>
       </div>
 
+      {/* TITLE + ACTIONS */}
       <div style={styles.content}>
         <div style={styles.subcontent}>
           <p style={styles.paragraph}>एचआरडी / HRD</p>
@@ -134,6 +142,7 @@ function HrdPage() {
 
       <div style={styles.forumHeader}>Professional Options</div>
 
+      {/* CARDS GRID */}
       <div style={styles.gridContainer}>
         {hrdCards.map((card) => (
   <div key={card.id} style={styles.card}>
@@ -171,11 +180,9 @@ function HrdPage() {
 ))}
 
         {options
-          .filter(option =>
-            option.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .map((option, index) => (
-            <div key={index} style={styles.card}>
+          .filter((o) => o.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map((option, idx) => (
+            <div key={idx} style={styles.card}>
               <div style={styles.iconWrapper}>
                 <div style={styles.iconCircle}>
                   <MdOutlineMenu style={styles.iconStyled} />
@@ -184,12 +191,14 @@ function HrdPage() {
               <div style={styles.titleBlock}>
                 <div style={styles.title}>{option}</div>
                 <div style={styles.topics}>
-                  Last post by <strong>{lastModifiedBy}</strong> on{" "}
-                  <em>{lastModifiedDate.toLocaleDateString("en-IN", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                  })}</em>
+                  Last post by <strong>{lastModifiedBy}</strong> on{' '}
+                  <em>
+                    {lastModifiedDate.toLocaleDateString('en-IN', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </em>
                 </div>
               </div>
             </div>
@@ -230,6 +239,56 @@ function HrdPage() {
 
 
 const styles = {
+  modalOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    },
+
+    modalBox: {
+        backgroundColor: '#fff',
+        padding: '20px 30px',
+        borderRadius: '10px',
+        textAlign: 'center',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+        maxWidth: '320px',
+        width: '90%',
+    },
+
+    modalTitle: {
+        marginBottom: '10px',
+        color: 'black',
+    },
+
+    modalButtons: {
+        marginTop: '20px',
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+
+    deleteButton: {
+        backgroundColor: '#e53935',
+        color: 'white',
+        border: 'none',
+        padding: '8px 16px',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
+
+    cancelButton: {
+        backgroundColor: '#ccc',
+        padding: '8px 16px',
+        borderRadius: '5px',
+        border: 'none',
+        cursor: 'pointer',
+    },
   page: {
     backgroundColor: '#fff',
     color: '#000',

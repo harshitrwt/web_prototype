@@ -45,6 +45,8 @@ function LoginPage() {
     }
     
     setError("");
+    
+    //logout function
     localStorage.setItem('isLoggedIn', 'true');
     setLoading(true);
 
