@@ -10,6 +10,13 @@ function AddReviewPage() {
   const [activeTab, setActiveTab] = useState("Options");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [drafts, setDrafts] = useState([]);
+  const [selectedDraftId, setSelectedDraftId] = useState(null);
+  const [loadError, setLoadError] = useState("");
+
+
+
   const textareaRef = useRef(null);
 
   const location = useLocation();
@@ -31,6 +38,17 @@ function AddReviewPage() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
+    setDrafts(saved);
+  }, []);
+
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
+    setDrafts(saved);
   }, []);
 
   const handleFileUpload = (e) => {
@@ -61,49 +79,100 @@ function AddReviewPage() {
   };
 
   const handleSubmit = () => {
-  if (!subject.trim() || !message.trim()) {
-    alert("Please enter both subject and message.");
-    return;
-  }
+    if (!subject.trim() || !message.trim()) {
+      alert("Please enter both subject and message.");
+      return;
+    }
 
-  const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
+    const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
 
-  const newTopic = {
-    id: Date.now(),
-    subject,
-    message,
-    section, // e.g. "canteen"
-    timestamp: new Date().toISOString()
-  };
+    const newTopic = {
+      id: Date.now(),
+      subject,
+      message,
+      section,
+      timestamp: new Date().toISOString()
+    };
 
-  const updated = [newTopic, ...allTopics];
-  localStorage.setItem("allTopics", JSON.stringify(updated));
+    const updated = [newTopic, ...allTopics];
+    localStorage.setItem("allTopics", JSON.stringify(updated));
 
     navigate(location.state?.from || "/");
   };
   const handleSaveDraft = () => {
     if (!subject.trim() && !message.trim()) return;
-    const newDraft = { id: Date.now(), subject, message };
-    const updatedDrafts = [newDraft, ...drafts];
-    localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
-    setDrafts(updatedDrafts);
-    setSubject("");
-    setMessage("");
+
+    let fileData = null;
+
+    if (file) {
+      fileData = {
+        name: file.name,
+        type: file.type,
+        content: null
+      };
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        fileData.content = reader.result;
+
+        const newDraft = {
+          id: Date.now(),
+          subject,
+          message,
+          file: fileData
+        };
+
+        const updatedDrafts = [newDraft, ...drafts];
+        localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+        setDrafts(updatedDrafts);
+        setSubject("");
+        setMessage("");
+        setFile(null);
+      };
+
+      reader.readAsDataURL(file); // encode as base64
+    } else {
+      const newDraft = {
+        id: Date.now(),
+        subject,
+        message,
+        file: null
+      };
+
+      const updatedDrafts = [newDraft, ...drafts];
+      localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+      setDrafts(updatedDrafts);
+      setSubject("");
+      setMessage("");
+    }
   };
 
-  const handleLoadDraft = () => {
-  if (!selectedDraftId) {
-    setLoadError("Please select a draft to load.");
-    return;
-  }
 
-  const draft = drafts.find(d => d.id === selectedDraftId);
-  if (draft) {
-    setSubject(draft.subject);
-    setMessage(draft.message);
-    setLoadError("");
-  }
-};
+  const handleLoadDraft = () => {
+    if (!selectedDraftId) {
+      setLoadError("Please select a draft to load.");
+      return;
+    }
+
+    const draft = drafts.find(d => d.id === selectedDraftId);
+    if (draft) {
+      setSubject(draft.subject);
+      setMessage(draft.message);
+      setLoadError("");
+
+      if (draft.file) {
+        const blob = fetch(draft.file.content)
+          .then(res => res.blob())
+          .then(blob => {
+            const restoredFile = new File([blob], draft.file.name, { type: draft.file.type });
+            setFile(restoredFile);
+          });
+      } else {
+        setFile(null);
+      }
+    }
+  };
+
 
 
   const handleDeleteDraft = (id) => {
@@ -214,12 +283,10 @@ function AddReviewPage() {
         </div>
 
         <div style={styles.buttonGroup}>
-          <button style={styles.button}>Load draft</button>
-          <button style={styles.button}>Save draft</button>
-          <button style={styles.button}>Preview</button>
-          <button style={styles.button} onClick={handleSubmit}>
-            Submit
-          </button>
+          <button style={styles.button} onClick={handleLoadDraft}>Load draft</button>
+          <button style={styles.button} onClick={handleSaveDraft}>Save draft</button>
+          <button style={styles.button} onClick={() => setShowPreview(true)}>Preview</button>
+          <button style={styles.button} onClick={handleSubmit}>Submit</button>
         </div>
 
         {loadError && <p style={{ color: "red", marginTop: "5px" }}>{loadError}</p>}
@@ -575,25 +642,49 @@ const styles = {
     userSelect: "none",
   },
   messageHeader: {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginTop: "15px",
-},
-emojiTopButton: {
-  background: "transparent",
-  border: "none",
-  fontSize: "22px",
-  cursor: "pointer",
-  userSelect: "none",
-},
-belowboardLink: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: "15px",
+  },
+  emojiTopButton: {
+    background: "transparent",
+    border: "none",
+    fontSize: "22px",
+    cursor: "pointer",
+    userSelect: "none",
+  },
+  previewBox: {
+    backgroundColor: "white",
+    border: "1px solid #ccc",
+    borderRadius: "1px",
+    padding: "20px",
+    marginTop: "20px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    maxWidth: "400px",
+    width: "80%",
+    color: "#333",
+  },
+  buttonGroup: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "20px"
+  },
+  button: {
+    padding: "8px 16px",
+    backgroundColor: "#01447C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer"
+  },
+  belowboardLink: {
     backgroundColor: '#f0f0f0',
     color: 'black',
     padding: '10px 20px',
     height: '100px',
     display: 'flex',
-    font: 'bold',   
+    font: 'bold',
     fontSize: '16px',
     border: '1px solid black',
     marginTop: '20px',

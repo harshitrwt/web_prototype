@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link , useNavigate } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
@@ -172,6 +172,7 @@ function ItgPage() {
                 </div>
               </div>
             )}
+            <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div style={styles.titleBlock}>
               <div style={styles.title}>{card.subject}</div>
               <div style={styles.topics}>{card.message}</div>
@@ -184,6 +185,7 @@ function ItgPage() {
                 })}
               </div>
             </div>
+            </Link>
           </div>
         ))}
 

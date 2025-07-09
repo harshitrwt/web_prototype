@@ -27,6 +27,7 @@ const AppRoutes = () => {
       <Route path="/hrdPage" element={<HrdPage/>} />
       <Route path="/itgPage" element={<ItgPage/>} />
       <Route path="/SportsPage" element={<SportsPage />} />
+      
       <Route path="/cards/:id" element={<CardDetails />} />
       
     </Routes>
