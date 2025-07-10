@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdOutlineMenu } from 'react-icons/md';
+import { Link , useNavigate } from 'react-router-dom';
+import {  MdSearch,MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
 import "./loginPage.css";
@@ -13,6 +13,9 @@ function CanteenPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [canteenCards, setCanteenCards] = useState([]);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [cardToDelete, setCardToDelete] = useState(null);
+
 
     const [options, setOptions] = useState([
         "CSD Currennt Rate List",
@@ -23,7 +26,7 @@ function CanteenPage() {
         "CSD Claim Forms"
     ]);
 
-    // Responsive handling
+
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth <= 768);
         checkMobile();
@@ -41,19 +44,19 @@ function CanteenPage() {
 
         fetchTopics();
 
-        window.addEventListener('focus', fetchTopics); // optional auto-refresh
+        window.addEventListener('focus', fetchTopics);
         return () => window.removeEventListener('focus', fetchTopics);
     }, []);
 
 
 
-    // Login status check
+
     useEffect(() => {
         const loggedIn = localStorage.getItem("isLoggedIn") === "true";
         setIsLoggedIn(loggedIn);
     }, []);
 
-    // Load user-added topics from localStorage
+
     useEffect(() => {
         const storedTopics = JSON.parse(localStorage.getItem("canteenTopics")) || [];
         setOptions((prev) => [...prev, ...storedTopics]);
@@ -170,23 +173,59 @@ function CanteenPage() {
                                 <MdOutlineMenu style={styles.iconStyled} />
                             </div>
                         </div>
-                        <button
-                            onClick={() => handleDelete(card.id)}
-                            className='deletebtn'
-                            style={{
-                                border: '2px solid white',
-                                borderRadius: '50%',
-                                color: 'black',
-                                cursor: 'pointer',
-                                fontSize: '18px',
-                                marginLeft: '30vh', 
-                                marginTop: '-40px', 
-                                marginBottom: '30px', 
-                            }}
-                            title="Delete"
-                        >
-                            🗑
-                        </button>
+                        {isLoggedIn && (
+                            <button
+                                onClick={() => {
+                                    setCardToDelete(card.id);
+                                    setShowDeleteConfirm(true);
+                                }}
+                                className='deletebtn'
+                                style={{
+                                    border: '2px solid white',
+                                    borderRadius: '50%',
+                                    color: 'black',
+                                    cursor: 'pointer',
+                                    fontSize: '18px',
+                                    marginLeft: '30vh',
+                                    marginTop: '-40px',
+                                    marginBottom: '30px',
+                                }}
+                                title="Delete"
+                            >
+                                🗑
+                            </button>
+                        )}
+
+                        {showDeleteConfirm && (
+                            <div style={styles.modalOverlay}>
+                                <div style={styles.modalBox}>
+                                    <h3 style={styles.modalTitle}>Are you sure?</h3>
+                                    <p style={{ color: 'black' }}>This will permanently delete this post.</p>
+                                    <div style={styles.modalButtons}>
+                                        <button
+                                            onClick={() => {
+                                                handleDelete(cardToDelete);
+                                                setShowDeleteConfirm(false);
+                                                setCardToDelete(null);
+                                            }}
+                                            style={styles.deleteButton}
+                                        >
+                                            Delete
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setShowDeleteConfirm(false);
+                                                setCardToDelete(null);
+                                            }}
+                                            style={styles.cancelButton}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div style={styles.titleBlock}>
                             <div style={styles.title}>{card.subject}</div>
                             <div style={styles.topics}>{card.message}</div>
@@ -199,6 +238,7 @@ function CanteenPage() {
                                 })}
                             </div>
                         </div>
+                        </Link>
                     </div>
                 ))}
 
@@ -262,6 +302,56 @@ function CanteenPage() {
 }
 
 const styles = {
+    modalOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    },
+
+    modalBox: {
+        backgroundColor: '#fff',
+        padding: '20px 30px',
+        borderRadius: '10px',
+        textAlign: 'center',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+        maxWidth: '320px',
+        width: '90%',
+    },
+
+    modalTitle: {
+        marginBottom: '10px',
+        color: 'black',
+    },
+
+    modalButtons: {
+        marginTop: '20px',
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+
+    deleteButton: {
+        backgroundColor: '#e53935',
+        color: 'white',
+        border: 'none',
+        padding: '8px 16px',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
+
+    cancelButton: {
+        backgroundColor: '#ccc',
+        padding: '8px 16px',
+        borderRadius: '5px',
+        border: 'none',
+        cursor: 'pointer',
+    },
     page: {
         backgroundColor: '#fff',
         color: '#000',

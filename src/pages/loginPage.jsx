@@ -9,6 +9,7 @@ function LoginPage() {
   const [captcha, setCaptcha] = useState('');
   const [captchaInput, setCaptchaInput] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -42,12 +43,18 @@ function LoginPage() {
       setError('Wrong password.');
       return;
     }
-
-    setError('');
+    
+    setError("");
+    
+    //logout function
     localStorage.setItem('isLoggedIn', 'true');
-    navigate('/main');
-    window.location.reload(); // ✅ trigger re-check in MainPage
+    setLoading(true);
 
+    // wait 1.5 sec, then navigate
+    setTimeout(() => {
+      navigate("/main");
+    }, 1500);
+    
   };
 
 
@@ -101,8 +108,17 @@ function LoginPage() {
 
           {error && <div style={styles.error}>{error}</div>}
 
-          <button type="submit" className='loginbtn' style={styles.button}>
-            Login
+          <button
+            className="loginbtn"
+            type="submit"
+            style={{
+              ...styles.button,
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+            disabled={loading}
+          >
+            {loading ? "Loading…" : "Login"}
           </button>
         </form>
       </div>
