@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link ,useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
@@ -137,17 +137,29 @@ function HrdPage() {
       <div style={styles.forumHeader}>Professional Options</div>
 
       <div style={styles.gridContainer}>
-        {hrdCards.map((card) => (
-  <div key={card.id} style={styles.card}>
-    <div style={styles.iconWrapper}>
+        {hrdCards
+        
+        .filter(
+            (c) =>
+              c.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              c.message.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+
+        .map((card) => (
+
+          
+       
+       <div  style={styles.card}>
+      <div style={styles.iconWrapper}>
       <div style={styles.iconCircle}>
         <MdOutlineMenu style={styles.iconStyled} />
       </div>
       {isLoggedIn && (
                             <button
                                 onClick={() => {
-                                    setCardToDelete(card.id);
-                                    setShowDeleteConfirm(true);
+                                setCardToDelete(card.id);
+                                 setShowDeleteConfirm(true);
+                                  
                                 }}
                                 className='deletebtn'
                                 style={{
@@ -196,6 +208,7 @@ function HrdPage() {
                             </div>
                         )}
     </div>
+    <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
     <div style={styles.titleBlock}>
       <div style={styles.title}>{card.subject}</div>
       <div style={styles.topics}>{card.message}</div>
@@ -208,7 +221,9 @@ function HrdPage() {
         })}
       </div>
     </div>
+    </Link>
   </div>
+  
 ))}
 
         {options
@@ -508,7 +523,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'flex-start',
     border: '2px solid #000',
-    padding: '20px',
+    padding: '20px ',
     borderRadius: '8px',
     height: '120px',
     color: '#fff',

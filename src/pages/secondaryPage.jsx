@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link , useNavigate } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
@@ -175,6 +175,7 @@ function SecondaryPage() {
                 </div>
               </div>
             )}
+            <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div style={styles.titleBlock}>
               <div style={styles.title}>{card.subject}</div>
               <div style={styles.topics}>{card.message}</div>
@@ -184,6 +185,7 @@ function SecondaryPage() {
                 })}
               </div>
             </div>
+            </Link>
           </div>
         ))}
 
@@ -471,7 +473,7 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
     gap: '20px',
-    padding: '20px 20px 40px',
+    padding: '20px 20px 40px ',
     backgroundColor: '#F1F1F1',
   },
   card: {
@@ -510,6 +512,7 @@ const styles = {
   titleBlock: {
     display: 'flex',
     flexDirection: 'column',
+    
   },
   title: {
     fontWeight: 'bold',
@@ -521,6 +524,7 @@ const styles = {
     fontSize: '13px',
     marginTop: '4px',
     color: '#e6ffe6',
+    
   },
 };
 
