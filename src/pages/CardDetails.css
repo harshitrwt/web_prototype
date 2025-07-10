@@ -1,37 +1,31 @@
 .abc{
-    border: 4px solid black;
-    text-align: center;
-    position: fixed;
-    width: 99vw ;
-    height: 100vh;
-    font-size: 30px;
-    
-    
-    
+    border: 1px solid #000;
+    text-align: left;
+    width: 98% ;
+    height: 60vh;
+    font-size: 16px;
+    padding-left: 20px;
 }
 
 .underline {
-    
     background-color: #01447C;
     padding: 10px;
     color : #fff;
     border-radius: 6px;
-    font-size: 15px;
+    font-size: 16px;
     cursor: pointer;
     border : none;
     font-weight: bold;
     width: 10%;
     margin-top: 8px;
-    margin-bottom: 10px;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border: none;
-    transition: 0.01s;
-
+    margin-bottom: 8px;
 }
 
 .underline:hover {
     background-color: #013560;
     box-shadow: 1px 2px px black;
-    
+}
+
+.back {
+    padding-top: 5px;
 }

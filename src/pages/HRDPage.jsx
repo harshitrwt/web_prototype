@@ -523,7 +523,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'flex-start',
     border: '2px solid #000',
-    padding: '20px',
+    padding: '20px ',
     borderRadius: '8px',
     height: '120px',
     color: '#fff',

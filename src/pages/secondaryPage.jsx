@@ -473,7 +473,7 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
     gap: '20px',
-    padding: '20px 20px 40px',
+    padding: '20px 20px 40px ',
     backgroundColor: '#F1F1F1',
   },
   card: {
@@ -512,6 +512,7 @@ const styles = {
   titleBlock: {
     display: 'flex',
     flexDirection: 'column',
+    
   },
   title: {
     fontWeight: 'bold',
@@ -523,6 +524,7 @@ const styles = {
     fontSize: '13px',
     marginTop: '4px',
     color: '#e6ffe6',
+    
   },
 };
 
