@@ -1,4 +1,4 @@
-import { Link , useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
@@ -12,8 +12,6 @@ function ItgPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [itgCards, setItgCards] = useState([]);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [cardToDelete, setCardToDelete] = useState(null);
   const [options, setOptions] = useState([
     "Latest Browser",
     "Guidelines to use Internet",
@@ -122,11 +120,8 @@ function ItgPage() {
             </div>
             {isLoggedIn && (
               <button
-                onClick={() => {
-                  setCardToDelete(card.id);
-                  setShowDeleteConfirm(true);
-                }}
-                className='deletebtn'
+                onClick={() => handleDelete(card.id)}
+                className="deletebtn"
                 style={{
                   border: '2px solid white',
                   borderRadius: '50%',
@@ -135,44 +130,13 @@ function ItgPage() {
                   fontSize: '18px',
                   marginLeft: '30vh',
                   marginTop: '-40px',
-                  marginBottom: '30px',
+                  marginBottom: '30px'
                 }}
                 title="Delete"
               >
                 🗑
               </button>
             )}
-
-            {showDeleteConfirm && (
-              <div style={styles.modalOverlay}>
-                <div style={styles.modalBox}>
-                  <h3 style={styles.modalTitle}>Are you sure?</h3>
-                  <p style={{ color: 'black' }}>This will permanently delete this post.</p>
-                  <div style={styles.modalButtons}>
-                    <button
-                      onClick={() => {
-                        handleDelete(cardToDelete);
-                        setShowDeleteConfirm(false);
-                        setCardToDelete(null);
-                      }}
-                      style={styles.deleteButton}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowDeleteConfirm(false);
-                        setCardToDelete(null);
-                      }}
-                      style={styles.cancelButton}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div style={styles.titleBlock}>
               <div style={styles.title}>{card.subject}</div>
               <div style={styles.topics}>{card.message}</div>
@@ -185,7 +149,6 @@ function ItgPage() {
                 })}
               </div>
             </div>
-            </Link>
           </div>
         ))}
 
@@ -254,56 +217,6 @@ function ItgPage() {
 
 
 const styles = {
-  modalOverlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
-
-    modalBox: {
-        backgroundColor: '#fff',
-        padding: '20px 30px',
-        borderRadius: '10px',
-        textAlign: 'center',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
-        maxWidth: '320px',
-        width: '90%',
-    },
-
-    modalTitle: {
-        marginBottom: '10px',
-        color: 'black',
-    },
-
-    modalButtons: {
-        marginTop: '20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-
-    deleteButton: {
-        backgroundColor: '#e53935',
-        color: 'white',
-        border: 'none',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-
-    cancelButton: {
-        backgroundColor: '#ccc',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        border: 'none',
-        cursor: 'pointer',
-    },
   page: {
     backgroundColor: '#fff',
     color: '#000',

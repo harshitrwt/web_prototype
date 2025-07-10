@@ -36,7 +36,7 @@ function MainPage() {
   localStorage.removeItem('isLoggedIn');
   setIsLoggedIn(false);
   setShowDropdown(false);
-  navigate('/');
+  navigate('/login');
   window.location.reload(); 
 };
 
@@ -65,16 +65,14 @@ function MainPage() {
   });
 
   return (
-    <div className="p-4" style={styles.page}>
-
-      <div
-        style={{
-          ...styles.navbar,
-          height: isMobile ? '60px' : '80px',
-          padding: isMobile ? '8px 12px' : '12px 20px',
-          fontSize: isMobile ? '12px' : '16px'
-        }}
-      >
+    <div style={styles.page}>
+      {/* Navbar */}
+      <div style={{
+        ...styles.navbar,
+        height: isMobile ? '60px' : '80px',
+        padding: isMobile ? '8px 12px' : '12px 20px',
+        fontSize: isMobile ? '12px' : '16px'
+      }}>
         <div style={styles.navLeft}>
           <div style={styles.logoTitleWrapper}>
             <img
