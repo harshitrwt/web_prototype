@@ -10,13 +10,6 @@ function AddReviewPage() {
   const [activeTab, setActiveTab] = useState("Options");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [drafts, setDrafts] = useState([]);
-  const [selectedDraftId, setSelectedDraftId] = useState(null);
-  const [loadError, setLoadError] = useState("");
-
-
-
   const textareaRef = useRef(null);
 
   const location = useLocation();
@@ -40,27 +33,9 @@ function AddReviewPage() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
-    setDrafts(saved);
-  }, []);
-
-
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
-    setDrafts(saved);
-  }, []);
-
   const handleFileUpload = (e) => {
-    const uploadedFile = e.target.files[0];
-    if (!uploadedFile) return;
-    setFile(uploadedFile);
-
-    // Append file reference in message body
-    const fileLinkText = `\n📎 [${uploadedFile.name}](#uploaded-file)\n`;
-    setMessage((prev) => prev + fileLinkText);
+    setFile(e.target.files[0]);
   };
-
 
   const addEmoji = (emoji) => {
     const textarea = textareaRef.current;
@@ -79,109 +54,27 @@ function AddReviewPage() {
   };
 
   const handleSubmit = () => {
-    if (!subject.trim() || !message.trim()) {
-      alert("Please enter both subject and message.");
-      return;
-    }
+  if (!subject.trim() || !message.trim()) {
+    alert("Please enter both subject and message.");
+    return;
+  }
 
-    const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
+  const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
 
-    const newTopic = {
-      id: Date.now(),
-      subject,
-      message,
-      section,
-      timestamp: new Date().toISOString()
-    };
-
-    const updated = [newTopic, ...allTopics];
-    localStorage.setItem("allTopics", JSON.stringify(updated));
-
-    navigate(location.state?.from || "/");
-  };
-  const handleSaveDraft = () => {
-    if (!subject.trim() && !message.trim()) return;
-
-    let fileData = null;
-
-    if (file) {
-      fileData = {
-        name: file.name,
-        type: file.type,
-        content: null
-      };
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        fileData.content = reader.result;
-
-        const newDraft = {
-          id: Date.now(),
-          subject,
-          message,
-          file: fileData
-        };
-
-        const updatedDrafts = [newDraft, ...drafts];
-        localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
-        setDrafts(updatedDrafts);
-        setSubject("");
-        setMessage("");
-        setFile(null);
-      };
-
-      reader.readAsDataURL(file); // encode as base64
-    } else {
-      const newDraft = {
-        id: Date.now(),
-        subject,
-        message,
-        file: null
-      };
-
-      const updatedDrafts = [newDraft, ...drafts];
-      localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
-      setDrafts(updatedDrafts);
-      setSubject("");
-      setMessage("");
-    }
+  const newTopic = {
+    id: Date.now(),
+    subject,
+    message,
+    section, // e.g. "canteen"
+    timestamp: new Date().toISOString()
   };
 
+  const updated = [newTopic, ...allTopics];
+  localStorage.setItem("allTopics", JSON.stringify(updated));
 
-  const handleLoadDraft = () => {
-    if (!selectedDraftId) {
-      setLoadError("Please select a draft to load.");
-      return;
-    }
-
-    const draft = drafts.find(d => d.id === selectedDraftId);
-    if (draft) {
-      setSubject(draft.subject);
-      setMessage(draft.message);
-      setLoadError("");
-
-      if (draft.file) {
-        const blob = fetch(draft.file.content)
-          .then(res => res.blob())
-          .then(blob => {
-            const restoredFile = new File([blob], draft.file.name, { type: draft.file.type });
-            setFile(restoredFile);
-          });
-      } else {
-        setFile(null);
-      }
-    }
-  };
-
-
-
-  const handleDeleteDraft = (id) => {
-    const updated = drafts.filter((d) => d.id !== id);
-    localStorage.setItem("drafts", JSON.stringify(updated));
-    setDrafts(updated);
-    if (selectedDraftId === id) setSelectedDraftId(null);
-  };
-
+  // ✅ Go back to the page the user came from (like /canteenpage)
+  navigate(location.state?.from || "/");
+};
 
 
 
@@ -283,73 +176,13 @@ function AddReviewPage() {
         </div>
 
         <div style={styles.buttonGroup}>
-          <button style={styles.button} onClick={handleLoadDraft}>Load draft</button>
-          <button style={styles.button} onClick={handleSaveDraft}>Save draft</button>
-          <button style={styles.button} onClick={() => setShowPreview(true)}>Preview</button>
-          <button style={styles.button} onClick={handleSubmit}>Submit</button>
+          <button style={styles.button}>Load draft</button>
+          <button style={styles.button}>Save draft</button>
+          <button style={styles.button}>Preview</button>
+          <button style={styles.button} onClick={handleSubmit}>
+            Submit
+          </button>
         </div>
-
-        {loadError && <p style={{ color: "red", marginTop: "5px" }}>{loadError}</p>}
-
-
-        {drafts.length > 0 && (
-          <div style={{ marginTop: "20px" }}>
-            <h4>Saved Drafts:</h4>
-            {drafts.map((draft) => (
-              <div key={draft.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                <input
-                  type="radio"
-                  checked={selectedDraftId === draft.id}
-                  onChange={() => setSelectedDraftId(draft.id)}
-                  style={{ marginRight: '8px' }}
-                />
-                <span style={{ color: '#01447C', cursor: 'pointer', flex: 1 }}>{draft.subject || "[No Subject]"}</span>
-                <button
-                  onClick={() => handleDeleteDraft(draft.id)}
-                  style={{
-                    marginLeft: '10px',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: 'red',
-                    fontWeight: 'bold',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-
-
-
-
-        {showPreview && (
-          <div style={styles.previewBox}>
-            <h3>{subject || "[No Subject]"}</h3>
-            <div style={{ whiteSpace: "pre-wrap" }}>
-              {(message || "[No Message]").split('\n').map((line, idx) =>
-                line.includes('[', idx) && line.includes('](#uploaded-file)') ? (
-                  <div key={idx}>
-                    📎 <a href="#" onClick={(e) => {
-                      e.preventDefault();
-                      if (file) {
-                        const fileURL = URL.createObjectURL(file);
-                        window.open(fileURL, '_blank');
-                      }
-                    }}>{file?.name}</a>
-                  </div>
-                ) : (
-                  <div key={idx}>{line}</div>
-                )
-              )}
-            </div>
-
-            <button onClick={() => setShowPreview(false)}>Close Preview</button>
-          </div>
-        )}
 
         {/* Tabs */}
         <div style={styles.tabs}>
@@ -642,49 +475,25 @@ const styles = {
     userSelect: "none",
   },
   messageHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: "15px",
-  },
-  emojiTopButton: {
-    background: "transparent",
-    border: "none",
-    fontSize: "22px",
-    cursor: "pointer",
-    userSelect: "none",
-  },
-  previewBox: {
-    backgroundColor: "white",
-    border: "1px solid #ccc",
-    borderRadius: "1px",
-    padding: "20px",
-    marginTop: "20px",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    maxWidth: "400px",
-    width: "80%",
-    color: "#333",
-  },
-  buttonGroup: {
-    display: "flex",
-    gap: "10px",
-    marginTop: "20px"
-  },
-  button: {
-    padding: "8px 16px",
-    backgroundColor: "#01447C",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer"
-  },
-  belowboardLink: {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: "15px",
+},
+emojiTopButton: {
+  background: "transparent",
+  border: "none",
+  fontSize: "22px",
+  cursor: "pointer",
+  userSelect: "none",
+},
+belowboardLink: {
     backgroundColor: '#f0f0f0',
     color: 'black',
     padding: '10px 20px',
     height: '100px',
     display: 'flex',
-    font: 'bold',
+    font: 'bold',   
     fontSize: '16px',
     border: '1px solid black',
     marginTop: '20px',
