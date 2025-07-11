@@ -1,4 +1,4 @@
-import { Link , useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
@@ -20,6 +20,7 @@ function ItgPage() {
     "Antivirus Link",
     "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR"
   ]);
+  
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -79,12 +80,13 @@ function ItgPage() {
         </div>
       </div>
 
-      {/* Breadcrumb */}
       <div style={styles.headerRow}>
-        <span style={styles.indexLink}>🏠︎ Board Index</span>
+        <Link to="/" style={{ ...styles.indexLink, textDecoration: 'none', color: 'inherit' }} >
+          🏠︎ Board Index
+        </Link>
       </div>
 
-      {/* Search + New Topic */}
+ 
       <div style={styles.content}>
         <div style={styles.subcontent}>
           <p style={styles.paragraph}>सूचना प्रौद्योगिकी समूह / Information Technology Group</p>
@@ -108,7 +110,7 @@ function ItgPage() {
         </div>
       </div>
 
-      {/* Forum Header */}
+      
       <div style={styles.forumHeader}>Professional Options</div>
 
       {/* Cards */}
@@ -173,18 +175,20 @@ function ItgPage() {
               </div>
             )}
             <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div style={styles.titleBlock}>
-              <div style={styles.title}>{card.subject}</div>
-              <div style={styles.topics}>{card.message}</div>
-              <div style={styles.topics}>
-                Posted on{" "}
-                {new Date(card.timestamp).toLocaleDateString("en-IN", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric"
-                })}
+              <div style={styles.titleBlock}>
+                <div style={styles.title}>{card.subject}</div>
+                <div style={styles.topics}>
+                  {card.message.split(' ').slice(0, 6).join(' ')}.
+                </div>
+                <div style={styles.topics}>
+                  Posted on{" "}
+                  {new Date(card.timestamp).toLocaleDateString("en-IN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                  })}
+                </div>
               </div>
-            </div>
             </Link>
           </div>
         ))}
@@ -223,17 +227,16 @@ function ItgPage() {
           >
             New Topic / नया विषय
           </button>
-          <span style={styles.belowpara}>12 topics Page 1 of 1</span>
         </div>
       )}
 
       <JumpToForum />
 
-      {/* Who is Online */}
+      
       <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
         <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
-        <span>Users browsing this forum: No registered users and 1 guest</span>
+        <span>Users browsing this forum: 1 registered users and no guest</span>
       </div>
 
       {/* Forum Permissions */}
@@ -255,55 +258,55 @@ function ItgPage() {
 
 const styles = {
   modalOverlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
 
-    modalBox: {
-        backgroundColor: '#fff',
-        padding: '20px 30px',
-        borderRadius: '10px',
-        textAlign: 'center',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
-        maxWidth: '320px',
-        width: '90%',
-    },
+  modalBox: {
+    backgroundColor: '#fff',
+    padding: '20px 30px',
+    borderRadius: '10px',
+    textAlign: 'center',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+    maxWidth: '320px',
+    width: '90%',
+  },
 
-    modalTitle: {
-        marginBottom: '10px',
-        color: 'black',
-    },
+  modalTitle: {
+    marginBottom: '10px',
+    color: 'black',
+  },
 
-    modalButtons: {
-        marginTop: '20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
+  modalButtons: {
+    marginTop: '20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
 
-    deleteButton: {
-        backgroundColor: '#e53935',
-        color: 'white',
-        border: 'none',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
+  deleteButton: {
+    backgroundColor: '#e53935',
+    color: 'white',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
 
-    cancelButton: {
-        backgroundColor: '#ccc',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        border: 'none',
-        cursor: 'pointer',
-    },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    padding: '8px 16px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+  },
   page: {
     backgroundColor: '#fff',
     color: '#000',

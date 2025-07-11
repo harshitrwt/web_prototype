@@ -1,4 +1,4 @@
-import { Link ,useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
@@ -23,7 +23,7 @@ function HrdPage() {
     "CSD Empanelled Hospitals & Diagnostic Centres - Delhi / NCR",
   ];
 
-   const handleDelete = (idToDelete) => {
+  const handleDelete = (idToDelete) => {
     const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
     const updated = all.filter((item) => item.id !== idToDelete);
     localStorage.setItem("allTopics", JSON.stringify(updated));
@@ -42,17 +42,17 @@ function HrdPage() {
     setIsLoggedIn(loggedIn);
   }, []);
   useEffect(() => {
-  const fetchTopics = () => {
-    const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
-    const filtered = all.filter((card) => card.section === "hrd");
-    setHrdCards(filtered);
-  };
+    const fetchTopics = () => {
+      const all = JSON.parse(localStorage.getItem("allTopics") || "[]");
+      const filtered = all.filter((card) => card.section === "hrd");
+      setHrdCards(filtered);
+    };
 
-  fetchTopics();
+    fetchTopics();
 
-  window.addEventListener('focus', fetchTopics);
-  return () => window.removeEventListener('focus', fetchTopics);
-}, []);
+    window.addEventListener('focus', fetchTopics);
+    return () => window.removeEventListener('focus', fetchTopics);
+  }, []);
 
 
   useEffect(() => {
@@ -108,7 +108,9 @@ function HrdPage() {
       </div>
 
       <div style={styles.headerRow}>
-        <span style={styles.indexLink}>🏠︎ Board Index</span>
+        <Link to="/" style={{ ...styles.indexLink, textDecoration: 'none', color: 'inherit' }} >
+          🏠︎ Board Index
+        </Link>
       </div>
 
       <div style={styles.content}>
@@ -138,93 +140,94 @@ function HrdPage() {
 
       <div style={styles.gridContainer}>
         {hrdCards
-        
-        .filter(
+
+          .filter(
             (c) =>
               c.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
               c.message.toLowerCase().includes(searchQuery.toLowerCase())
           )
 
-        .map((card) => (
+          .map((card) => (
 
-          
-       
-       <div  style={styles.card}>
-      <div style={styles.iconWrapper}>
-      <div style={styles.iconCircle}>
-        <MdOutlineMenu style={styles.iconStyled} />
-      </div>
-      {isLoggedIn && (
-                            <button
-                                onClick={() => {
-                                setCardToDelete(card.id);
-                                 setShowDeleteConfirm(true);
-                                  
-                                }}
-                                className='deletebtn'
-                                style={{
-                                    border: '2px solid white',
-                                    borderRadius: '50%',
-                                    color: 'black',
-                                    cursor: 'pointer',
-                                    fontSize: '18px',
-                                    marginLeft: '30vh',
-                                    marginTop: '-40px',
-                                    marginBottom: '30px',
-                                }}
-                                title="Delete"
-                            >
-                                🗑
-                            </button>
-                        )}
 
-                        {showDeleteConfirm && (
-                            <div style={styles.modalOverlay}>
-                                <div style={styles.modalBox}>
-                                    <h3 style={styles.modalTitle}>Are you sure?</h3>
-                                    <p style={{ color: 'black' }}>This will permanently delete this post.</p>
-                                    <div style={styles.modalButtons}>
-                                        <button
-                                            onClick={() => {
-                                                handleDelete(cardToDelete);
-                                                setShowDeleteConfirm(false);
-                                                setCardToDelete(null);
-                                            }}
-                                            style={styles.deleteButton}
-                                        >
-                                            Delete
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setShowDeleteConfirm(false);
-                                                setCardToDelete(null);
-                                            }}
-                                            style={styles.cancelButton}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-    </div>
-    <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
-    <div style={styles.titleBlock}>
-      <div style={styles.title}>{card.subject}</div>
-      <div style={styles.topics}>{card.message}</div>
-      <div style={styles.topics}>
-        Posted on{" "}
-        {new Date(card.timestamp).toLocaleDateString("en-IN", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </div>
-    </div>
-    </Link>
-  </div>
-  
-))}
+
+            <div style={styles.card}>
+              <div style={styles.iconWrapper}>
+                <div style={styles.iconCircle}>
+                  <MdOutlineMenu style={styles.iconStyled} />
+                </div>
+                {isLoggedIn && (
+                  <button
+                    onClick={() => {
+                      setCardToDelete(card.id);
+                      setShowDeleteConfirm(true);
+                    }}
+                    className='deletebtn'
+                    style={{
+                      border: '2px solid white',
+                      borderRadius: '50%',
+                      color: 'black',
+                      cursor: 'pointer',
+                      fontSize: '18px',
+                      marginLeft: '30vh',
+                      marginTop: '-40px',
+                      marginBottom: '30px',
+                    }}
+                    title="Delete"
+                  >
+                    🗑
+                  </button>
+                )}
+
+                {showDeleteConfirm && (
+                  <div style={styles.modalOverlay}>
+                    <div style={styles.modalBox}>
+                      <h3 style={styles.modalTitle}>Are you sure?</h3>
+                      <p style={{ color: 'black' }}>This will permanently delete this post.</p>
+                      <div style={styles.modalButtons}>
+                        <button
+                          onClick={() => {
+                            handleDelete(cardToDelete);
+                            setShowDeleteConfirm(false);
+                            setCardToDelete(null);
+                          }}
+                          style={styles.deleteButton}
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowDeleteConfirm(false);
+                            setCardToDelete(null);
+                          }}
+                          style={styles.cancelButton}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div style={styles.titleBlock}>
+                  <div style={styles.title}>{card.subject}</div>
+                  <div style={styles.topics}>
+                    {card.message.split(' ').slice(0, 6).join(' ')}.
+                  </div>
+                  <div style={styles.topics}>
+                    Posted on{" "}
+                    {new Date(card.timestamp).toLocaleDateString("en-IN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </div>
+                </div>
+              </Link>
+            </div>
+
+          ))}
 
         {options
           .filter(option =>
@@ -257,7 +260,6 @@ function HrdPage() {
           <button style={styles.newTopicButton} onClick={() => navigate('/review', { state: { section: 'hrd', from: '/hrdpage' } })}>
             New Topic / नया विषय
           </button>
-          <span style={styles.belowpara}>12 topics Page 1 of 1</span>
         </div>
       )}
 
@@ -266,7 +268,7 @@ function HrdPage() {
       <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
         <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
-        <span>Users browsing this forum: No registered users and 1 guest</span>
+        <span>Users browsing this forum: 1 registered users and no guest</span>
       </div>
 
       <div style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -287,55 +289,55 @@ function HrdPage() {
 
 const styles = {
   modalOverlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
 
-    modalBox: {
-        backgroundColor: '#fff',
-        padding: '20px 30px',
-        borderRadius: '10px',
-        textAlign: 'center',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
-        maxWidth: '320px',
-        width: '90%',
-    },
+  modalBox: {
+    backgroundColor: '#fff',
+    padding: '20px 30px',
+    borderRadius: '10px',
+    textAlign: 'center',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+    maxWidth: '320px',
+    width: '90%',
+  },
 
-    modalTitle: {
-        marginBottom: '10px',
-        color: 'black',
-    },
+  modalTitle: {
+    marginBottom: '10px',
+    color: 'black',
+  },
 
-    modalButtons: {
-        marginTop: '20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
+  modalButtons: {
+    marginTop: '20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
 
-    deleteButton: {
-        backgroundColor: '#e53935',
-        color: 'white',
-        border: 'none',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
+  deleteButton: {
+    backgroundColor: '#e53935',
+    color: 'white',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
 
-    cancelButton: {
-        backgroundColor: '#ccc',
-        padding: '8px 16px',
-        borderRadius: '5px',
-        border: 'none',
-        cursor: 'pointer',
-    },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    padding: '8px 16px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+  },
   page: {
     backgroundColor: '#fff',
     color: '#000',

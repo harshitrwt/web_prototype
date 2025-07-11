@@ -1,4 +1,4 @@
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate, Link } from "react-router-dom";
 
 import { useEffect, useState } from 'react';
 
@@ -13,7 +13,7 @@ function CardDetails() {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  
+
 
   // 🚨 If the user refreshed the page there will be no state;
   // in real apps fetch the card from your store or API.
@@ -29,64 +29,94 @@ function CardDetails() {
   }
 
   const { title: rawTitle, description: rawDesc, subject, message } = state.card;
+  console.log("Loaded file from card:", state.card.file);
+
   const title = rawTitle ?? subject;
   const description = rawDesc ?? message;
 
   return (
     <main>
       <div style={styles.page}>
-      <div style={{ ...styles.navbar, height: isMobile ? '60px' : '80px', padding: isMobile ? '8px 12px' : '12px 20px' }}>
-        <div style={styles.navLeft}>
-          <div style={styles.logoTitleWrapper}>
-            <img
-              src="/imglogo.png"
-              alt="Logo"
-              style={{ ...styles.logo, width: isMobile ? '50px' : '75px', height: isMobile ? '50px' : '75px', cursor: 'pointer' }}
-              onClick={() => navigate('/')}
-            />
-            <div style={styles.hindiTitle}>
-              <div style={{ fontSize: isMobile ? '12px' : '21px', width: isMobile ? '170px' : 'auto' }}>ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /</div>
-              <div style={{ fontSize: isMobile ? '10px' : '21px' }}>Solid State Physics Laboratory Bulletin Board</div>
+        <div style={{ ...styles.navbar, height: isMobile ? '60px' : '80px', padding: isMobile ? '8px 12px' : '12px 20px' }}>
+          <div style={styles.navLeft}>
+            <div style={styles.logoTitleWrapper}>
+              <img
+                src="/imglogo.png"
+                alt="Logo"
+                style={{ ...styles.logo, width: isMobile ? '50px' : '75px', height: isMobile ? '50px' : '75px', cursor: 'pointer' }}
+                onClick={() => navigate('/')}
+              />
+              <div style={styles.hindiTitle}>
+                <div style={{ fontSize: isMobile ? '12px' : '21px', width: isMobile ? '170px' : 'auto' }}>ठोसावस्था भौतिकी प्रयोगशाला बुलेटिन बोर्ड /</div>
+                <div style={{ fontSize: isMobile ? '10px' : '21px' }}>Solid State Physics Laboratory Bulletin Board</div>
+              </div>
             </div>
           </div>
+
         </div>
-        
-      </div>
-      <div style={styles.headerRow}>
-        <span style={styles.indexLink}>🏠︎ Board Index</span>
-      </div>
-
-      <div style={styles.forumHeader}>Discription</div>
-    
-      
-      <div className="abc">
-      <p><strong>Subject:</strong>{title}</p>
-      <p><strong>Message: </strong>{description}</p>
-      </div>
-      <div className="back">
-        <button onClick={() => navigate(-1)} className="underline">
-        ← Back
-        </button>
-      </div>
-
-      <footer>
-       <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px',padding:'0px 0px 0px 10px' }}>
-          <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
-          <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
-          <span>Users browsing this forum: No registered users and 1 guest</span>
-      </div>
-
-       <div style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '10px', padding:'0px 0px 0px 10px' }}>
-          <span style={{ fontWeight: 'bold' }}>FORUM PERMISSIONS</span>
-          <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
-          <span>You <strong>cannot</strong> post new topics in the forum</span>
-          <span>You <strong>cannot</strong> reply to topics in the forum</span>
-          <span>You <strong>cannot</strong> edit your posts in the forum</span>
-          <span>You <strong>cannot</strong> delete your posts in the forum</span>
+        <div style={styles.headerRow}>
+          <Link to="/" style={{ ...styles.indexLink, textDecoration: 'none', color: 'inherit' }} >
+            🏠︎ Board Index
+          </Link>
         </div>
-        <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
-      </footer>
-      
+
+        <div style={styles.forumHeader}>Discription</div>
+
+
+        <div className="abc" style={{ maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
+          <p><strong>Subject:</strong>{title}</p>
+          <div style={{ whiteSpace: "pre-wrap" }}>
+            <p><strong>Message:</strong></p>
+            {description.split('\n').map((line, idx) => {
+              const match = line.match(/\[(.*?)\]\(#uploaded-file\)/);
+              if (match && state.card.file) {
+                return (
+                  <div key={idx}>
+                    📎 <a
+                      href={state.card.file.content}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: 'blue', textDecoration: 'underline' }}
+                    >
+                      {match[1]}
+                    </a>
+                  </div>
+                );
+              } else {
+                return <div key={idx}>{line}</div>;
+              }
+            })}
+          </div>
+
+
+
+
+
+        </div>
+        <div className="back">
+          <button onClick={() => navigate(-1)} className="underline">
+            ← Back
+          </button>
+        </div>
+
+        <footer>
+          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px', padding: '0px 0px 0px 10px' }}>
+            <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
+            <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
+            <span>Users browsing this forum: 1 registered users and no guest</span>
+          </div>
+
+          <div style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '10px', padding: '0px 0px 0px 10px' }}>
+            <span style={{ fontWeight: 'bold' }}>FORUM PERMISSIONS</span>
+            <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
+            <span>You <strong>cannot</strong> post new topics in the forum</span>
+            <span>You <strong>cannot</strong> reply to topics in the forum</span>
+            <span>You <strong>cannot</strong> edit your posts in the forum</span>
+            <span>You <strong>cannot</strong> delete your posts in the forum</span>
+          </div>
+          <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
+        </footer>
+
       </div>
     </main>
   );

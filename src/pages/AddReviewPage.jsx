@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 const emojis = ["😀", "😂", "😍", "👍", "🙏", "🔥", "🎉", "💡", "✅", "❌"];
 
@@ -42,24 +44,25 @@ function AddReviewPage() {
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
-    setDrafts(saved);
-  }, []);
+    const filtered = saved.filter((draft) => draft.section === section);
+    setDrafts(filtered);
+  }, [section]);
 
-
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("drafts") || "[]");
-    setDrafts(saved);
-  }, []);
 
   const handleFileUpload = (e) => {
     const uploadedFile = e.target.files[0];
     if (!uploadedFile) return;
-    setFile(uploadedFile);
 
-    // Append file reference in message body
-    const fileLinkText = `\n📎 [${uploadedFile.name}](#uploaded-file)\n`;
-    setMessage((prev) => prev + fileLinkText);
+    const fileUrl = URL.createObjectURL(uploadedFile);
+
+    setFile({
+      name: uploadedFile.name,
+      url: fileUrl
+    });
+    setMessage((prev) => `${prev}\n[${uploadedFile.name}](#uploaded-file)`);
+
   };
+
 
 
   const addEmoji = (emoji) => {
@@ -79,73 +82,111 @@ function AddReviewPage() {
   };
 
   const handleSubmit = () => {
-    if (!subject.trim() || !message.trim()) {
-      alert("Please enter both subject and message.");
-      return;
-    }
+  if (!subject.trim() || !message.trim()) {
+    alert("Please enter both subject and message.");
+    return;
+  }
 
-    const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
+  const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
 
+  // If no file, just save directly
+  if (!file) {
     const newTopic = {
       id: Date.now(),
       subject,
       message,
       section,
+      file: null,
       timestamp: new Date().toISOString()
     };
 
     const updated = [newTopic, ...allTopics];
     localStorage.setItem("allTopics", JSON.stringify(updated));
+    navigate(location.state?.from || "/");
+    return;
+  }
 
+  // If there's a file, convert to base64 before saving
+  const reader = new FileReader();
+  reader.onload = () => {
+    const fileData = {
+      name: file.name,
+      type: file.type,
+      content: reader.result
+    };
+
+    const newTopic = {
+      id: Date.now(),
+      subject,
+      message: `${message}\n[${file.name}](#uploaded-file)`, // ensure this is added
+      section,
+      file: fileData,
+      timestamp: new Date().toISOString()
+    };
+
+    const updated = [newTopic, ...allTopics];
+    localStorage.setItem("allTopics", JSON.stringify(updated));
     navigate(location.state?.from || "/");
   };
+
+  reader.readAsDataURL(file); // convert to base64
+};
+
+  
   const handleSaveDraft = () => {
-    if (!subject.trim() && !message.trim()) return;
+  if (!subject.trim() && !message.trim()) return;
 
-    let fileData = null;
+  let fileData = null;
 
-    if (file) {
-      fileData = {
-        name: file.name,
-        type: file.type,
-        content: null
-      };
+  if (file) {
+    fileData = {
+      name: file.name,
+      type: file.type,
+      content: null
+    };
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        fileData.content = reader.result;
+    const reader = new FileReader();
 
-        const newDraft = {
-          id: Date.now(),
-          subject,
-          message,
-          file: fileData
-        };
+    reader.onload = () => {
+      fileData.content = reader.result;
 
-        const updatedDrafts = [newDraft, ...drafts];
-        localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
-        setDrafts(updatedDrafts);
-        setSubject("");
-        setMessage("");
-        setFile(null);
-      };
-
-      reader.readAsDataURL(file); // encode as base64
-    } else {
       const newDraft = {
         id: Date.now(),
         subject,
         message,
-        file: null
+        file: fileData,
+        section // ✅ include section always!
       };
 
-      const updatedDrafts = [newDraft, ...drafts];
+      const existingDrafts = JSON.parse(localStorage.getItem("drafts") || "[]");
+      const updatedDrafts = [newDraft, ...existingDrafts];
       localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
-      setDrafts(updatedDrafts);
+      setDrafts(updatedDrafts.filter(d => d.section === section));
       setSubject("");
       setMessage("");
-    }
-  };
+      setFile(null);
+    };
+
+    reader.readAsDataURL(file); // encode as base64
+  } else {
+    const newDraft = {
+      id: Date.now(),
+      subject,
+      message,
+      file: null,
+      section // ✅ make sure to include section here too!
+    };
+
+    const existingDrafts = JSON.parse(localStorage.getItem("drafts") || "[]");
+    const updatedDrafts = [newDraft, ...existingDrafts];
+    localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+    setDrafts(updatedDrafts.filter(d => d.section === section));
+    setSubject("");
+    setMessage("");
+    setFile(null);
+  }
+};
+
 
 
   const handleLoadDraft = () => {
@@ -227,8 +268,11 @@ function AddReviewPage() {
 
       {/* Title */}
       <div style={styles.headerRow}>
-        <span style={styles.indexLink}>🏠︎ Board Index</span>
+        <Link to="/" style={{ ...styles.indexLink, textDecoration: 'none', color: 'inherit' }}>
+          🏠︎ Board Index
+        </Link>
       </div>
+
       <h2 style={styles.heading}>{headingText}</h2>
 
       {/* Form */}
@@ -330,22 +374,27 @@ function AddReviewPage() {
           <div style={styles.previewBox}>
             <h3>{subject || "[No Subject]"}</h3>
             <div style={{ whiteSpace: "pre-wrap" }}>
-              {(message || "[No Message]").split('\n').map((line, idx) =>
-                line.includes('[', idx) && line.includes('](#uploaded-file)') ? (
-                  <div key={idx}>
-                    📎 <a href="#" onClick={(e) => {
-                      e.preventDefault();
-                      if (file) {
-                        const fileURL = URL.createObjectURL(file);
-                        window.open(fileURL, '_blank');
-                      }
-                    }}>{file?.name}</a>
-                  </div>
-                ) : (
-                  <div key={idx}>{line}</div>
-                )
-              )}
+              {(message || "[No Message]").split('\n').map((line, idx) => {
+                // Check if line contains the uploaded file markdown syntax
+                const isUploadedLink = line.includes('](#uploaded-file)');
+                if (isUploadedLink && file) {
+                  return (
+                    <div key={idx}>
+                      📎 <a
+                        href={file.url || file.content}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'blue', textDecoration: 'underline' }}
+                      >
+                        {file.name}
+                      </a>
+                    </div>
+                  );
+                }
+                return <div key={idx}>{line}</div>;
+              })}
             </div>
+
 
             <button onClick={() => setShowPreview(false)}>Close Preview</button>
           </div>
@@ -424,7 +473,13 @@ function AddReviewPage() {
         </div>
       </div>
 
-      <div style={styles.belowboardLink}> 🏠︎ Board Index</div>
+      <div style={styles.belowboardLink}>
+
+        🏠︎ Board Index
+
+      </div>
+
+
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Link , useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdOutlineMenu } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import JumpToForum from './JumpTo';
@@ -87,7 +87,9 @@ function SecondaryPage() {
       </div>
 
       <div style={styles.headerRow}>
-        <span style={styles.indexLink}>🏠︎ Board Index</span>
+        <Link to="/" style={{ ...styles.indexLink, textDecoration: 'none', color: 'inherit' }} >
+          🏠︎ Board Index
+        </Link>
       </div>
 
       <div style={styles.content}>
@@ -97,7 +99,7 @@ function SecondaryPage() {
             {isLoggedIn && (
               <button
                 style={styles.newTopicButton}
-                onClick={() => navigate('/review', { state: { section: 'CGHS' } })}
+                onClick={() => navigate('/review', { state: { section: 'CGHS', from: '/dashboard' } })}
               >
                 New Topic / नया विषय
               </button>
@@ -176,15 +178,18 @@ function SecondaryPage() {
               </div>
             )}
             <Link key={card.id} to={`/cards/${card.id}`} state={{ card }} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div style={styles.titleBlock}>
-              <div style={styles.title}>{card.subject}</div>
-              <div style={styles.topics}>{card.message}</div>
-              <div style={styles.topics}>
-                Posted on {new Date(card.timestamp).toLocaleDateString("en-IN", {
-                  year: "numeric", month: "long", day: "numeric"
-                })}
+              <div style={styles.titleBlock}>
+                <div style={styles.title}>{card.subject}</div>
+                <div style={styles.topics}>
+                  {card.message.split(' ').slice(0, 6).join(' ')}.
+                </div>
+
+                <div style={styles.topics}>
+                  Posted on {new Date(card.timestamp).toLocaleDateString("en-IN", {
+                    year: "numeric", month: "long", day: "numeric"
+                  })}
+                </div>
               </div>
-            </div>
             </Link>
           </div>
         ))}
@@ -215,7 +220,6 @@ function SecondaryPage() {
           <button style={styles.newTopicButton} onClick={() => navigate('/review', { state: { section: 'CGHS' } })}>
             New Topic / नया विषय
           </button>
-          <span style={styles.belowpara}>12 topics Page 1 of 1</span>
         </div>
       )}
 
@@ -224,7 +228,7 @@ function SecondaryPage() {
       <div style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <span style={{ fontWeight: 'bold' }}>WHO IS ONLINE</span>
         <span style={{ borderBottom: '1px solid grey', width: '100%' }}></span>
-        <span>Users browsing this forum: No registered users and 1 guest</span>
+        <span>Users browsing this forum: 1 registered users and no guest</span>
       </div>
 
       <div style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -512,7 +516,7 @@ const styles = {
   titleBlock: {
     display: 'flex',
     flexDirection: 'column',
-    
+
   },
   title: {
     fontWeight: 'bold',
@@ -524,7 +528,7 @@ const styles = {
     fontSize: '13px',
     marginTop: '4px',
     color: '#e6ffe6',
-    
+
   },
 };
 
