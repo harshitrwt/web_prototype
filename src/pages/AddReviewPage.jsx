@@ -57,11 +57,15 @@ function AddReviewPage() {
 
     setFile({
       name: uploadedFile.name,
-      url: fileUrl
+      type: uploadedFile.type,
+      raw: uploadedFile,      // this is the actual File object we’ll use later
+      url: fileUrl            // this is only for preview
     });
-    setMessage((prev) => `${prev}\n[${uploadedFile.name}](#uploaded-file)`);
 
+    // Add markdown link to message
+    setMessage((prev) => `${prev}\n[${uploadedFile.name}](#uploaded-file)`);
   };
+
 
 
 
@@ -80,82 +84,107 @@ function AddReviewPage() {
       textarea.focus();
     }, 0);
   };
-
   const handleSubmit = () => {
-  if (!subject.trim() || !message.trim()) {
-    alert("Please enter both subject and message.");
-    return;
-  }
+    if (!subject.trim() || !message.trim()) {
+      alert("Please enter both subject and message.");
+      return;
+    }
 
-  const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
+    const allTopics = JSON.parse(localStorage.getItem("allTopics") || "[]");
 
-  // If no file, just save directly
-  if (!file) {
-    const newTopic = {
-      id: Date.now(),
-      subject,
-      message,
-      section,
-      file: null,
-      timestamp: new Date().toISOString()
+    // If no file, save directly
+    if (!file) {
+      const newTopic = {
+        id: Date.now(),
+        subject,
+        message,
+        section,
+        file: null,
+        timestamp: new Date().toISOString()
+      };
+
+      const updated = [newTopic, ...allTopics];
+      localStorage.setItem("allTopics", JSON.stringify(updated));
+      navigate(location.state?.from || "/");
+      return;
+    }
+
+    // If file exists, encode it to base64 then store
+    const reader = new FileReader();
+    reader.onload = () => {
+
+      const fileData = {
+        name: file.name,
+        type: file.type,
+        content: reader.result
+      };
+
+      const updatedMessage = message.includes(`[${file.name}](#uploaded-file)`)
+        ? message
+        : `${message}\n[${file.name}](#uploaded-file)`; 
+
+      const newTopic = {
+        id: Date.now(),
+        subject,
+        message: updatedMessage,
+        section,
+        file: fileData,
+        timestamp: new Date().toISOString()
+      };
+
+      const updated = [newTopic, ...allTopics];
+      localStorage.setItem("allTopics", JSON.stringify(updated));
+      navigate(location.state?.from || "/");
     };
 
-    const updated = [newTopic, ...allTopics];
-    localStorage.setItem("allTopics", JSON.stringify(updated));
-    navigate(location.state?.from || "/");
-    return;
-  }
+    reader.readAsDataURL(file.raw);
 
-  // If there's a file, convert to base64 before saving
-  const reader = new FileReader();
-  reader.onload = () => {
-    const fileData = {
-      name: file.name,
-      type: file.type,
-      content: reader.result
-    };
-
-    const newTopic = {
-      id: Date.now(),
-      subject,
-      message: `${message}\n[${file.name}](#uploaded-file)`, // ensure this is added
-      section,
-      file: fileData,
-      timestamp: new Date().toISOString()
-    };
-
-    const updated = [newTopic, ...allTopics];
-    localStorage.setItem("allTopics", JSON.stringify(updated));
-    navigate(location.state?.from || "/");
   };
 
-  reader.readAsDataURL(file); // convert to base64
-};
 
-  
+
   const handleSaveDraft = () => {
-  if (!subject.trim() && !message.trim()) return;
+    if (!subject.trim() && !message.trim()) return;
 
-  let fileData = null;
+    let fileData = null;
 
-  if (file) {
-    fileData = {
-      name: file.name,
-      type: file.type,
-      content: null
-    };
+    if (file) {
+      fileData = {
+        name: file.name,
+        type: file.type,
+        content: null
+      };
 
-    const reader = new FileReader();
+      const reader = new FileReader();
 
-    reader.onload = () => {
-      fileData.content = reader.result;
+      reader.onload = () => {
+        fileData.content = reader.result;
 
+        const newDraft = {
+          id: Date.now(),
+          subject,
+          message,
+          file: fileData,
+          section // include section always!
+        };
+
+        const existingDrafts = JSON.parse(localStorage.getItem("drafts") || "[]");
+        const updatedDrafts = [newDraft, ...existingDrafts];
+        localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
+        setDrafts(updatedDrafts.filter(d => d.section === section));
+        setSubject("");
+        setMessage("");
+        setFile(null);
+      };
+
+      reader.readAsDataURL(file); // encode as base64
+    } else {
       const newDraft = {
         id: Date.now(),
         subject,
         message,
-        file: fileData,
-        section // ✅ include section always!
+        file: null,
+        section // make sure to include section here too!
       };
 
       const existingDrafts = JSON.parse(localStorage.getItem("drafts") || "[]");
@@ -165,27 +194,8 @@ function AddReviewPage() {
       setSubject("");
       setMessage("");
       setFile(null);
-    };
-
-    reader.readAsDataURL(file); // encode as base64
-  } else {
-    const newDraft = {
-      id: Date.now(),
-      subject,
-      message,
-      file: null,
-      section // ✅ make sure to include section here too!
-    };
-
-    const existingDrafts = JSON.parse(localStorage.getItem("drafts") || "[]");
-    const updatedDrafts = [newDraft, ...existingDrafts];
-    localStorage.setItem("drafts", JSON.stringify(updatedDrafts));
-    setDrafts(updatedDrafts.filter(d => d.section === section));
-    setSubject("");
-    setMessage("");
-    setFile(null);
-  }
-};
+    }
+  };
 
 
 
