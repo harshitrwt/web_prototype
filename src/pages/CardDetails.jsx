@@ -60,7 +60,7 @@ function CardDetails() {
           </Link>
         </div>
 
-        <div style={styles.forumHeader}>Discription</div>
+        <div style={styles.forumHeader}>Description</div>
 
 
         <div className="abc" style={{ maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
