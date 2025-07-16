@@ -506,7 +506,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#01447C",
+    backgroundColor: "linear-gradient(to right, #0d1a4a, #01447D)",
     height: "80px",
     color: "#fff",
     padding: "12px 20px",
