@@ -17,3 +17,19 @@ A modern, responsive login interface with a built-in captcha system, designed wi
 The login page features a centrally aligned form with three input fields: username, password, and captcha. A “Refresh” button next to the captcha allows regeneration of a new code. The entire interface is styled with a defense-themed background to create a secure and authoritative visual tone. The design is clean, modern, and ensures accessibility and usability across devices.
 
 
+## Technologies Used
+
+- **React** – For building the user interface
+- **JavaScript (ES6+)** – Logic for handling captcha and form interactions
+- **HTML/CSS** – Page structure and custom styling
+- **Tailwind CSS / Styled Components / Plain CSS** – Styling framework (based on implementation)
+
+## How It Works
+
+- When the page loads, a captcha image is randomly generated and displayed.
+- Users fill in their username and password, then match the captcha.
+- Pressing the “Refresh” button generates a new captcha without reloading the page.
+- Incorrect entries trigger error messages; successful matches proceed to the dashboard or next step.
+
+
+
